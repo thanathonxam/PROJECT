@@ -4,7 +4,7 @@ import Menu.*;
 
 public class Main extends JFrame {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Main::new);
+        new Main();
     }
 
     public Main() { 
@@ -24,12 +24,11 @@ public class Main extends JFrame {
 
         // ปุ่ม Play
         JButton playButton = new JButton("Play");
-        playButton.setFont(new Font("Arial", Font.PLAIN, 20));
-        playButton.addActionListener(e -> {
-            // ปิด StartMenu
+        playButton.setFont(new Font("Arial", Font.PLAIN, 24));
+        playButton.addActionListener(e -> { 
             dispose();
             // เปิดเกมจริง
-            SwingUtilities.invokeLater(() -> new GameWindow());
+            new GameWindow();
         });
 
         JPanel bottomPanel = new JPanel();
