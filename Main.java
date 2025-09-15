@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import Menu.*;
 
 public class Main extends JFrame {
@@ -25,10 +26,12 @@ public class Main extends JFrame {
         // ปุ่ม Play
         JButton playButton = new JButton("Play");
         playButton.setFont(new Font("Arial", Font.PLAIN, 24));
-        playButton.addActionListener(e -> { 
-            dispose();
-            // เปิดเกมจริง
-            new GameWindow();
+        playButton.addActionListener(new ActionListener() {
+            @Override
+        public void actionPerformed(ActionEvent e) {
+            setVisible(false);  // ปิดหน้าปัจจุบัน
+            new GameWindow(); // เปิดเกมใหม่
+            }
         });
 
         JPanel bottomPanel = new JPanel();

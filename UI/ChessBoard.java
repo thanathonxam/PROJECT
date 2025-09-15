@@ -1,5 +1,6 @@
 package UI;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
 public class ChessBoard extends JPanel {
@@ -25,7 +26,12 @@ public class ChessBoard extends JPanel {
                 final int rr = r, cc = c;
                 // สลับสีช่อง
                 bt.setBackground(((r + c) % 2 == 0) ? light : dark);
-                bt.addActionListener(e -> onSquareClicked(rr, cc));
+                bt.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        onSquareClicked(rr, cc);
+                            }
+                    });
                 squares[r][c] = bt;
                 add(bt);
             }
