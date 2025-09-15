@@ -20,12 +20,12 @@ public class Main extends JFrame {
 
         // Label หัวเรื่อง
         JLabel title = new JLabel("CHESS GAME DEMO", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setFont(new Font("",Font.PLAIN, 28));
         add(title, BorderLayout.CENTER);
 
         // ปุ่ม Play
         JButton playButton = new JButton("Play");
-        playButton.setFont(new Font("Arial", Font.PLAIN, 24));
+        playButton.setFont(new Font("",Font.PLAIN, 24));
         playButton.addActionListener(new ActionListener() {
             @Override
         public void actionPerformed(ActionEvent e) {

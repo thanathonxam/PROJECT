@@ -50,10 +50,12 @@ public class ChessBoard extends JPanel {
         board[0][5] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
         board[0][6] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
         board[0][7] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
-        for (int c = 0; c < 8; c++) board[1][c] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.PAWN);
+        for (int c = 0; c < 8; c++) 
+            {board[1][c] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.PAWN);}
 
         // white pieces
-        for (int c = 0; c < 8; c++) board[6][c] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.PAWN);
+        for (int c = 0; c < 8; c++) 
+            {board[6][c] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.PAWN);}
         board[7][0] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
         board[7][1] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
         board[7][2] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
@@ -71,33 +73,28 @@ public class ChessBoard extends JPanel {
                 ChessPiece piece = board[r][c];
                 btn.setText(piece == null ? "" : piece.getUnicode());
                 btn.setBackground(((r + c) % 2 == 0) ? light : dark);
-                btn.setForeground(piece != null && piece.getColor() == ChessPiece.Color.WHITE
-                        ? Color.BLACK : Color.WHITE);
+                btn.setForeground(piece != null && piece.getColor() == ChessPiece.Color.WHITE ? Color.BLACK : Color.WHITE);
                 btn.setBorder(null);
             }
-        }
-        if (selected != null) {
-            squares[selected.x][selected.y].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
         }
     }
 
     private void onSquareClicked(int r, int c) {
-        if (selected == null) {
-            if (board[r][c] != null) {
-                selected = new Point(r, c);
-                refreshBoard();
-            }
-        } else {
-            if (selected.x == r && selected.y == c) {
-                selected = null;
-                refreshBoard();
-                return;
-            }
+    // ถ้ายังไม่ได้เลือกหมาก
+        if (selected == null && board[r][c] != null) {
+            selected = new Point(r, c);
+        }
+    // ถ้าคลิกซ้ำที่เดิม → ยกเลิก
+        else if (selected != null && selected.x == r && selected.y == c) {
+            selected = null;
+        }
+    // ถ้าเลือกหมากแล้ว และกดช่องอื่น → ย้าย
+        else if (selected != null) {
             board[r][c] = board[selected.x][selected.y];
             board[selected.x][selected.y] = null;
             selected = null;
-            refreshBoard();
         }
+    refreshBoard(); // อัพเดท UI ทุกครั้ง
     }
 }
 
