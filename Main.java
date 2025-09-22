@@ -5,7 +5,12 @@ import Menu.*;
 
 public class Main extends JFrame {
     public static void main(String[] args) {
-        new Main();
+        // ensure Swing components are created on the Event Dispatch Thread
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Main();
+            }
+        });
     }
 
     public Main() { 
