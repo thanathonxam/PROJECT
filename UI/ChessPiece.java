@@ -17,12 +17,12 @@ public class ChessPiece {
 
     public String getUnicode() {
         switch (type) {
-            case KING:   return color == Color.WHITE ? "\u2654" : "\u265A";
-            case QUEEN:  return color == Color.WHITE ? "\u2655" : "\u265B";
-            case ROOK:   return color == Color.WHITE ? "\u2656" : "\u265C";
-            case BISHOP: return color == Color.WHITE ? "\u2657" : "\u265D";
-            case KNIGHT: return color == Color.WHITE ? "\u2658" : "\u265E";
-            case PAWN:   return color == Color.WHITE ? "\u2659" : "\u265F";
+            case KING:   return color == Color.BLACK ? "\u2654" : "\u265A";
+            case QUEEN:  return color == Color.BLACK ? "\u2655" : "\u265B";
+            case ROOK:   return color == Color.BLACK ? "\u2656" : "\u265C";
+            case BISHOP: return color == Color.BLACK ? "\u2657" : "\u265D";
+            case KNIGHT: return color == Color.BLACK ? "\u2658" : "\u265E";
+            case PAWN:   return color == Color.BLACK ? "\u2659" : "\u265F";
         }
         return "";
     }
