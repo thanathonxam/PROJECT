@@ -16,14 +16,25 @@ public class ChessPiece {
     public Type getType() { return type; }
 
     public String getUnicode() {
+    if (color == Color.WHITE) {
         switch (type) {
-            case KING:   return color == Color.WHITE ? "\u265A" : "\u265A";
-            case QUEEN:  return color == Color.WHITE ? "\u265B" : "\u265B";
-            case ROOK:   return color == Color.WHITE ? "\u265C" : "\u265C";
-            case BISHOP: return color == Color.WHITE ? "\u265D" : "\u265D";
-            case KNIGHT: return color == Color.WHITE ? "\u265E" : "\u265E";
-            case PAWN:   return color == Color.WHITE ? "\u265F" : "\u265F";
+            case KING:   return "\u265A"; 
+            case QUEEN:  return "\u265B"; 
+            case ROOK:   return "\u265C"; 
+            case BISHOP: return "\u265D"; 
+            case KNIGHT: return "\u265E"; 
+            case PAWN:   return "\u265F"; 
         }
-        return "";
+    } else { // BLACK
+        switch (type) {
+            case KING:   return "\u265A"; 
+            case QUEEN:  return "\u265B"; 
+            case ROOK:   return "\u265C"; 
+            case BISHOP: return "\u265D"; 
+            case KNIGHT: return "\u265E"; 
+            case PAWN:   return "\u265F"; 
+        }
     }
+    return "";
+}
 }

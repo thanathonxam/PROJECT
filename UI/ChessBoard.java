@@ -1,6 +1,7 @@
 package UI;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 import javax.swing.*;
 import Menu.*;
 
@@ -22,8 +23,6 @@ public class ChessBoard extends JPanel {
     private JLabel turnLabel = null;
     private JLabel player1Label = null;
     private JLabel player2Label = null;
-
-    public ChessBoard() { this(null, null, null, null); }
 
     public ChessBoard(JLabel player2Label, JLabel player1Label, JLabel timer2Label, JLabel timer1Label) {
         this.player2Label = player2Label;
@@ -97,9 +96,19 @@ public class ChessBoard extends JPanel {
             for (int c = 0; c < 8; c++) {
                 JButton btn = squares[r][c];
                 ChessPiece piece = board[r][c];
-                btn.setText(piece == null ? "" : piece.getUnicode());
+                if (piece == null) {
+                        btn.setText("");
+                     } else {
+                             btn.setText(piece.getUnicode());
+                        }
 
-                Color bg = ((r + c) % 2 == 0) ? light : dark;
+                // พื้นหลังแล้ว ถ้าเป็นช่องที่เลือกไว้ให้ใช้สีไฮไลท์
+                Color bg;
+                if ((r + c) % 2 == 0) {
+                    bg = light;
+                    } else {
+                         bg = dark;
+                        }
                 if (selected != null && selected.x == r && selected.y == c) {
                     bg = select;
                 }
@@ -109,7 +118,7 @@ public class ChessBoard extends JPanel {
                         ? Color.WHITE   // White → สีขาว
                         : Color.BLACK   // Black → สีดำ
                     );
-
+                // highlight all pieces belonging to the current player so it's obvious who can move
                 if (piece != null && piece.getColor() == currentTurn) {
                     btn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2));
                 } else {
@@ -117,7 +126,6 @@ public class ChessBoard extends JPanel {
                 }
             }
         }
-        updatePlayerLabelStyles();
         gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
 
     }
@@ -148,13 +156,20 @@ public class ChessBoard extends JPanel {
 
         player2Label.revalidate(); player2Label.repaint();
         player1Label.revalidate(); player1Label.repaint();
-        if (turnLabel != null) { turnLabel.revalidate(); turnLabel.repaint(); }
     }
 
     private void onSquareClicked(int r, int c) {
-    // debug: print clicked square, piece there, and whose turn it is
+        // debug: print clicked square, piece there, and whose turn it is
         ChessPiece clicked = board[r][c];
-        System.out.println("Clicked (" + r + "," + c + ") piece=" + (clicked==null?"null":clicked.getType()+"/"+clicked.getColor()) + " currentTurn=" + currentTurn);
+        String pieceInfo;
+        if (clicked == null) {
+                pieceInfo = "none";
+            } else {
+                String type = Objects.toString(clicked.getType(), "unknown");
+                String color = Objects.toString(clicked.getColor(), "unknown");
+                pieceInfo = type + "/" + color;
+            }
+            System.out.println(String.format("Clicked (%d,%d) piece=%s currentTurn=%s", r, c, pieceInfo, currentTurn));
     // ถ้ายังไม่ได้เลือกหมาก
         if (selected == null && board[r][c] != null) {
             // only allow selecting pieces of the side whose turn it is
@@ -177,8 +192,12 @@ public class ChessBoard extends JPanel {
                 board[r][c] = from;
                 board[selected.x][selected.y] = null;
                 selected = null;
-                // toggle turn after a successful move
-                currentTurn = (currentTurn == ChessPiece.Color.WHITE) ? ChessPiece.Color.BLACK : ChessPiece.Color.WHITE;
+                // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
+                if (currentTurn == ChessPiece.Color.WHITE) {
+                        currentTurn = ChessPiece.Color.BLACK;
+                    } else {
+                         currentTurn = ChessPiece.Color.WHITE;
+                                }
                 updatePlayerLabelStyles();
             }
         }

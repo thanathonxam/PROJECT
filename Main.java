@@ -22,7 +22,7 @@ public class Main extends JFrame {
         JLabel title = new JLabel("CHESS GAME DEMO", SwingConstants.CENTER);
         title.setFont(new Font("",Font.PLAIN, 28));
         add(title, BorderLayout.CENTER);
-
+        
         // ปุ่ม Play
         JButton playButton = new JButton("Play");
         playButton.setFont(new Font("",Font.PLAIN, 24));

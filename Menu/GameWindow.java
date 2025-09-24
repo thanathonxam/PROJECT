@@ -24,10 +24,12 @@ public class GameWindow extends JFrame {
         JLabel player2 = new JLabel();
         JLabel timer2Label = new JLabel("10:00");
 
+        
         // ใช้เมธอดใหม่ในการสร้าง Panel สำหรับผู้เล่น
         JPanel player1Panel = createPlayerPanel("Player 1", "White", player1, timer1Label);
         JPanel player2Panel = createPlayerPanel("Player 2", "Black", player2, timer2Label);
 
+    
         // --- ChessBoard ตรงกลาง ---
         ChessBoard chessBoard = new ChessBoard(player1, player2, timer1Label, timer2Label);
         add(chessBoard, BorderLayout.CENTER);

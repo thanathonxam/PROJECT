@@ -16,15 +16,13 @@ public class GameClock {
         this.timeBlack = startSeconds;
         this.whiteLabel = whiteLabel;
         this.blackLabel = blackLabel;
-        this.currentTurn = ChessPiece.Color.WHITE; // เริ่มให้ขาวเดินก่อน
-        updateLabels();
+        this.currentTurn = ChessPiece.Color.BLACK; // เริ่มให้ขาวเดินก่อน
     }
 
     // เปลี่ยนฝั่งที่จะนับเวลา
     public void switchTurn(ChessPiece.Color turn) {
         this.currentTurn = turn;
     }
-
     // เริ่มจับเวลา
     public void startClock() {
         if (clockTimer != null) clockTimer.stop(); //หยุด timer เก่าถ้ามีอยู่แล้ว เพื่อป้องกันการมีหลายตัวนับซ้อนกัน
@@ -52,11 +50,6 @@ public class GameClock {
         clockTimer.start();
     }
 
-    // หยุดเวลา
-    public void stop() {
-        if (clockTimer != null) clockTimer.stop();
-    }
-
     // แปลงวินาทีเป็น MM:SS
     private String formatTime(int seconds) {
         int min = seconds / 60;
@@ -64,9 +57,4 @@ public class GameClock {
         return String.format("%02d:%02d", min, sec);
     }
 
-    // อัปเดตป้าย label ตอนเริ่มเกม
-    private void updateLabels() {
-        whiteLabel.setText(formatTime(timeWhite));
-        blackLabel.setText(formatTime(timeBlack));
-    }
 }
