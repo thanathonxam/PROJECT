@@ -1,7 +1,7 @@
 package Menu;
 import javax.swing.*;
 import java.awt.*;
-import UI.*; 
+import UI.*;
 
 public class GameWindow extends JFrame {
 
@@ -18,38 +18,56 @@ public class GameWindow extends JFrame {
         sidePanel.setPreferredSize(new Dimension(160, 640));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
-        // create player labels first so we can pass them to the board for dynamic updates
-        JLabel player1 = new JLabel("Player 1 (White)");
+        // --- Player Labels ---
+        JLabel player1 = new JLabel();
         JLabel timer1Label = new JLabel("10:00");
-        JLabel player2 = new JLabel("Player 2 (Black)");
+        JLabel player2 = new JLabel();
         JLabel timer2Label = new JLabel("10:00");
 
-        player1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        timer1Label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        player2.setAlignmentX(Component.CENTER_ALIGNMENT);
-        timer2Label.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        // ใช้เมธอดใหม่ในการสร้าง Panel สำหรับผู้เล่น
+        JPanel player1Panel = createPlayerPanel("Player 1", "White", player1, timer1Label);
+        JPanel player2Panel = createPlayerPanel("Player 2", "Black", player2, timer2Label);
 
         // --- ChessBoard ตรงกลาง ---
-        ChessBoard chessBoard = new ChessBoard( player1, player2,timer1Label, timer2Label);
+        ChessBoard chessBoard = new ChessBoard(player1, player2, timer1Label, timer2Label);
         add(chessBoard, BorderLayout.CENTER);
 
+        // --- จัดวางใน sidePanel ---
         sidePanel.add(Box.createVerticalStrut(20));
-        sidePanel.add(player1);
-        sidePanel.add(timer1Label);
-        sidePanel.add(Box.createVerticalStrut(10));
+        sidePanel.add(player1Panel);
         sidePanel.add(Box.createVerticalGlue());
-        sidePanel.add(player2);
-        sidePanel.add(timer2Label);
+        sidePanel.add(player2Panel);
         sidePanel.add(Box.createVerticalStrut(20));
 
         add(sidePanel, BorderLayout.WEST);
         setVisible(true);
 
-        // debug: print label instance ids so we can compare with ChessBoard
+        // debug: print label instance ids
         System.out.println("[GameWindow] player1 id=" + System.identityHashCode(player1) + " text='" + player1.getText() + "'");
         System.out.println("[GameWindow] player2 id=" + System.identityHashCode(player2) + " text='" + player2.getText() + "'");
-        // ensure ChessBoard has synced the styles (might be needed after visible)
+
+        // sync สถานะตอนเริ่มเกม
         chessBoard.updatePlayerLabelStyles();
+    }
+
+    // เมธอดใหม่: สำหรับสร้าง panel ของผู้เล่น (เพิ่มมาใหม่ทั้งหมด)
+    private JPanel createPlayerPanel(String name, String color, JLabel nameLabel, JLabel timerLabel) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.setOpaque(false);
+
+        // ใช้ HTML เพื่อขึ้นบรรทัดใหม่
+        nameLabel.setText("<html><div style='text-align: center;'>" + name + "<br>(" + color + ")</div></html>");
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        timerLabel.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(nameLabel);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(timerLabel);
+        return panel;
     }
 }

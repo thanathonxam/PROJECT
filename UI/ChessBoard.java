@@ -2,35 +2,40 @@ package UI;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import Menu.*;
 
 public class ChessBoard extends JPanel {
     private final JButton[][] squares = new JButton[8][8];
     private final ChessPiece[][] board = new ChessPiece[8][8];
     private Point selected = null;
-    private int timerWhite = 600; // 10 นาที
-    private int timerBlack = 600;
-    private JLabel timer1Label;
-    private JLabel timer2Label;
-    private Timer clockTimer;
+
+    // ใช้ GameClock แทนตัวแปรเวลาเดิม
+    private GameClock gameClock;
+
     // track whose turn it is; Player 1 will be WHITE
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
 
     private final Color light = new Color(181, 136, 99);
     private final Color dark = new Color(240, 217, 181);
     private final Color select = new Color(250, 200, 0);
+
     private JLabel turnLabel = null;
     private JLabel player1Label = null;
     private JLabel player2Label = null;
 
-    public ChessBoard() { this(null, null,null,null); }
+    public ChessBoard() { this(null, null, null, null); }
 
-    public ChessBoard(JLabel player1Label, JLabel player2Label,JLabel timer1Label, JLabel timer2Label) {
-        this.player1Label = player1Label;
+    public ChessBoard(JLabel player2Label, JLabel player1Label, JLabel timer2Label, JLabel timer1Label) {
         this.player2Label = player2Label;
-        this.timer1Label = timer1Label;
-        this.timer2Label = timer2Label;
-        // initialize player label styles according to currentTurn
+        this.player1Label = player1Label;
+
+        // ✅ สร้าง GameClock (600 วินาที = 10 นาที)
+        this.gameClock = new GameClock(600, timer1Label, timer2Label);
+        this.gameClock.startClock();
+
+        // initialize player label styles
         updatePlayerLabelStyles();
+
         setLayout(new GridLayout(8, 8));
         Font pieceFont = new Font("chess", Font.PLAIN, 50);
 
@@ -43,7 +48,6 @@ public class ChessBoard extends JPanel {
                 bt.setOpaque(true);
                 bt.setBorderPainted(false);
                 final int rr = r, cc = c;
-                // สลับสีช่อง
                 bt.setBackground(((r + c) % 2 == 0) ? light : dark);
                 bt.addActionListener(new ActionListener() {
                     @Override
@@ -55,71 +59,38 @@ public class ChessBoard extends JPanel {
                 add(bt);
             }
         }
+
         initStartingPosition();
         refreshBoard();
-        startClock(); // เริ่มนับเวลาฝั่งแรก
     }
-    // เพิ่มฟังก์ชัน startClock
-      private void startClock() {
-        if (clockTimer != null) clockTimer.stop(); //หยุด timer เก่าถ้ามีอยู่แล้ว เพื่อป้องกันการมีหลายตัวนับซ้อนกัน
-
-    clockTimer = new Timer(1000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (currentTurn == ChessPiece.Color.BLACK) {
-                timerBlack--;
-                timer1Label.setText(formatTime(timerBlack));
-                if (timerBlack <= 0) {
-                    JOptionPane.showMessageDialog(ChessBoard.this, "Black time out! White wins!");
-                    System.exit(0);
-                }
-            } else {
-                timerWhite--;
-                timer2Label.setText(formatTime(timerWhite));
-                if (timerWhite <= 0) {
-                    JOptionPane.showMessageDialog(ChessBoard.this, "White time out! Black wins!");
-                    System.exit(0);
-                }
-            }
-        }
-    });
-
-    clockTimer.start();
-}
-    //เพิ่มฟังก์ชัน format เวลา 
-    //แปลงวินาทีเป็น MM:SS และคืนค่าเป็นStringเพื่อให้เวลาของผู้เล่นแสดงใน Clocktimer
-    private String formatTime(int seconds) {
-        int min = seconds / 60;   // แปลงวินาทีเป็นจำนวนเต็มของนาที
-        int sec = seconds % 60;   // วินาทีที่เหลือหลังจากเอานาทีออก
-        return String.format("%02d:%02d", min, sec);  //แปลงเป็นสตริงรูปแบบ "MM:SS"
-}
-
 
     private void initStartingPosition() {
-        // black pieces
-        board[0][0] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
-        board[0][1] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
-        board[0][2] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
-        board[0][3] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.QUEEN);
-        board[0][4] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KING);
-        board[0][5] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
-        board[0][6] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
-        board[0][7] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
-        for (int c = 0; c < 8; c++) 
-            {board[1][c] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.PAWN);}
-
-        // white pieces
-        for (int c = 0; c < 8; c++) 
-            {board[6][c] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.PAWN);}
-        board[7][0] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
-        board[7][1] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
-        board[7][2] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
-        board[7][3] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.QUEEN);
-        board[7][4] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KING);
-        board[7][5] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
-        board[7][6] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
-        board[7][7] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
+    // Black pieces (ด้านบน)
+    board[0][0] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
+    board[0][1] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
+    board[0][2] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
+    board[0][3] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.QUEEN);
+    board[0][4] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KING);
+    board[0][5] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
+    board[0][6] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
+    board[0][7] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
+    for (int c = 0; c < 8; c++) {
+        board[1][c] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.PAWN);
     }
+
+    // White pieces (ด้านล่าง)
+    for (int c = 0; c < 8; c++) {
+        board[6][c] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.PAWN);
+    }
+    board[7][0] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
+    board[7][1] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
+    board[7][2] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
+    board[7][3] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.QUEEN);
+    board[7][4] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KING);
+    board[7][5] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
+    board[7][6] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
+    board[7][7] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
+}
 
     private void refreshBoard() {
         for (int r = 0; r < 8; r++) {
@@ -127,14 +98,18 @@ public class ChessBoard extends JPanel {
                 JButton btn = squares[r][c];
                 ChessPiece piece = board[r][c];
                 btn.setText(piece == null ? "" : piece.getUnicode());
-                // พื้นหลังแล้ว ถ้าเป็นช่องที่เลือกไว้ให้ใช้สีไฮไลท์
+
                 Color bg = ((r + c) % 2 == 0) ? light : dark;
                 if (selected != null && selected.x == r && selected.y == c) {
                     bg = select;
                 }
                 btn.setBackground(bg);
-                btn.setForeground(piece != null && piece.getColor() == ChessPiece.Color.WHITE ? Color.BLACK : Color.WHITE);
-                // highlight all pieces belonging to the current player so it's obvious who can move
+                btn.setForeground(
+                    piece != null && piece.getColor() == ChessPiece.Color.WHITE 
+                        ? Color.WHITE   // White → สีขาว
+                        : Color.BLACK   // Black → สีดำ
+                    );
+
                 if (piece != null && piece.getColor() == currentTurn) {
                     btn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2));
                 } else {
@@ -142,38 +117,39 @@ public class ChessBoard extends JPanel {
                 }
             }
         }
+        updatePlayerLabelStyles();
+        gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
+
     }
 
-    // update UI styles for player labels so it's clear whose turn it is
+    // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
-        if (player1Label == null || player2Label == null) return;
-        Font normal = player1Label.getFont().deriveFont(Font.PLAIN);
-        Font bold = player1Label.getFont().deriveFont(Font.BOLD);
-        if (currentTurn == ChessPiece.Color.BLACK) {
-            player1Label.setFont(bold);
+        if (player2Label == null || player1Label == null) return;
+
+        Font normal = player2Label.getFont().deriveFont(Font.PLAIN);
+        Font bold   = player2Label.getFont().deriveFont(Font.BOLD);
+
+        if (currentTurn == ChessPiece.Color.WHITE) {
             player2Label.setFont(normal);
-            player1Label.setText("Player 1 (White) - Active");
-            player2Label.setText("Player 2 (Black)");
+            player2Label.setText("<html><div style='text-align:center;'>Player 2 (Black)</div></html>");
+
+            player1Label.setFont(bold);
+            player1Label.setText("<html><div style='text-align:center;'>Player 1 (White)<br><span style='color:green;'>Active</span></div></html>");
         } else {
-            player1Label.setFont(normal);
             player2Label.setFont(bold);
-            player1Label.setText("Player 1 (White)");
-            player2Label.setText("Player 2 (Black) - Active");
+            player2Label.setText("<html><div style='text-align:center;'>Player 2 (Black)<br><span style='color:green;'>Active</span></div></html>");
+
+            player1Label.setFont(normal);
+            player1Label.setText("<html><div style='text-align:center;'>Player 1 (White)</div></html>");
         }
-        
-        // debug: print identity hashes so we can verify same instances
-        System.out.println("[ChessBoard] updatePlayerLabelStyles: currentTurn=" + currentTurn);
-        System.out.println("[ChessBoard] player1Label id=" + System.identityHashCode(player1Label) + " text='" + player1Label.getText() + "'");
-        System.out.println("[ChessBoard] player2Label id=" + System.identityHashCode(player2Label) + " text='" + player2Label.getText() + "'");
-        if (turnLabel != null) System.out.println("[ChessBoard] turnLabel id=" + System.identityHashCode(turnLabel) + " text='" + turnLabel.getText() + "'");
-        // ensure UI repaint
-        player1Label.revalidate(); player1Label.repaint();
+
         player2Label.revalidate(); player2Label.repaint();
+        player1Label.revalidate(); player1Label.repaint();
         if (turnLabel != null) { turnLabel.revalidate(); turnLabel.repaint(); }
     }
 
     private void onSquareClicked(int r, int c) {
-        // debug: print clicked square, piece there, and whose turn it is
+    // debug: print clicked square, piece there, and whose turn it is
         ChessPiece clicked = board[r][c];
         System.out.println("Clicked (" + r + "," + c + ") piece=" + (clicked==null?"null":clicked.getType()+"/"+clicked.getColor()) + " currentTurn=" + currentTurn);
     // ถ้ายังไม่ได้เลือกหมาก
@@ -201,7 +177,6 @@ public class ChessBoard extends JPanel {
                 // toggle turn after a successful move
                 currentTurn = (currentTurn == ChessPiece.Color.WHITE) ? ChessPiece.Color.BLACK : ChessPiece.Color.WHITE;
                 updatePlayerLabelStyles();
-                startClock();// นับเวลาฝั่งใหม่
             }
         }
     refreshBoard(); // อัพเดท UI ทุกครั้ง
