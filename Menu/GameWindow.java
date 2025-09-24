@@ -4,7 +4,6 @@ import java.awt.*;
 import UI.*; 
 
 public class GameWindow extends JFrame {
-
     public GameWindow() {
         setTitle("CHESS GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -13,43 +12,34 @@ public class GameWindow extends JFrame {
         setResizable(false);
         setLayout(new BorderLayout());
 
+        // --- ChessBoard ตรงกลาง ---
+        ChessBoard chessBoard = new ChessBoard();
+        add(chessBoard, BorderLayout.CENTER);
+
         // --- Panel ข้างๆ ---
         JPanel sidePanel = new JPanel();
         sidePanel.setPreferredSize(new Dimension(160, 640));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
-        // create player labels first so we can pass them to the board for dynamic updates
-        JLabel player1 = new JLabel("Player 1 (White)");
-        JLabel timer1Label = new JLabel("10:00");
-        JLabel player2 = new JLabel("Player 2 (Black)");
-        JLabel timer2Label = new JLabel("10:00");
+        JLabel player1 = new JLabel("Player 1");
+        JLabel timer1 = new JLabel("Time: 10:00");
+        JLabel player2 = new JLabel("Player 2");
+        JLabel timer2 = new JLabel("Time: 10:00");
 
         player1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        timer1Label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        timer1.setAlignmentX(Component.CENTER_ALIGNMENT);
         player2.setAlignmentX(Component.CENTER_ALIGNMENT);
-        timer2Label.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-        // --- ChessBoard ตรงกลาง ---
-        ChessBoard chessBoard = new ChessBoard( player1, player2,timer1Label, timer2Label);
-        add(chessBoard, BorderLayout.CENTER);
+        timer2.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         sidePanel.add(Box.createVerticalStrut(20));
         sidePanel.add(player1);
-        sidePanel.add(timer1Label);
-        sidePanel.add(Box.createVerticalStrut(10));
+        sidePanel.add(timer1);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(player2);
-        sidePanel.add(timer2Label);
+        sidePanel.add(timer2);
         sidePanel.add(Box.createVerticalStrut(20));
 
         add(sidePanel, BorderLayout.WEST);
         setVisible(true);
-
-        // debug: print label instance ids so we can compare with ChessBoard
-        System.out.println("[GameWindow] player1 id=" + System.identityHashCode(player1) + " text='" + player1.getText() + "'");
-        System.out.println("[GameWindow] player2 id=" + System.identityHashCode(player2) + " text='" + player2.getText() + "'");
-        // ensure ChessBoard has synced the styles (might be needed after visible)
-        chessBoard.updatePlayerLabelStyles();
     }
 }
