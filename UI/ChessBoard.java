@@ -29,7 +29,7 @@ public class ChessBoard extends JPanel {
         this.player2Label = player2Label;
         this.player1Label = player1Label;
 
-        // ✅ สร้าง GameClock (600 วินาที = 10 นาที)
+        // สร้าง GameClock (600 วินาที = 10 นาที)
         this.gameClock = new GameClock(600, timer1Label, timer2Label);
         this.gameClock.startClock();
 
