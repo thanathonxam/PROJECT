@@ -20,13 +20,21 @@ public class ChessBoard extends JPanel {
     private final Color dark = new Color(240, 217, 181);
     private final Color select = new Color(250, 200, 0);
 
-    private JLabel turnLabel = null;
     private JLabel player1Label = null;
     private JLabel player2Label = null;
 
-    public ChessBoard(JLabel player2Label, JLabel player1Label, JLabel timer2Label, JLabel timer1Label) {
-        this.player2Label = player2Label;
-        this.player1Label = player1Label;
+    // Player UI
+    private JLabel player1Name, player1Active, timer1Label;
+    private JLabel player2Name, player2Active, timer2Label;
+
+      public ChessBoard(JLabel player1Name, JLabel player1Active, JLabel timer1Label,JLabel player2Name, JLabel player2Active, JLabel timer2Label) {
+        this.player1Name = player1Name;
+        this.player1Active = player1Active;
+        this.timer1Label = timer1Label;
+
+        this.player2Name = player2Name;
+        this.player2Active = player2Active;
+        this.timer2Label = timer2Label;
 
         // สร้าง GameClock (600 วินาที = 10 นาที)
         this.gameClock = new GameClock(600, timer1Label, timer2Label);
@@ -132,30 +140,13 @@ public class ChessBoard extends JPanel {
 
     // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
-        if (player2Label == null || player1Label == null) return;
-
-        Font normal = player2Label.getFont().deriveFont(Font.PLAIN);
-        Font bold   = player2Label.getFont().deriveFont(Font.BOLD);
-        
-        player1Label.setHorizontalAlignment(SwingConstants.CENTER);
-        player2Label.setHorizontalAlignment(SwingConstants.CENTER);
-
         if (currentTurn == ChessPiece.Color.WHITE) {
-            player2Label.setFont(normal);
-            player2Label.setText("<html><div style='text-align:center;'>Player 2 (Black)</div></html>");
-
-            player1Label.setFont(bold);
-            player1Label.setText("<html><div style='text-align:center;'>Player 1 (White)<br><span style='color:green;'>Active</span></div></html>");
+            player1Active.setVisible(true);
+            player2Active.setVisible(false);
         } else {
-            player2Label.setFont(bold);
-            player2Label.setText("<html><div style='text-align:center;'>Player 2 (Black)<br><span style='color:green;'>Active</span></div></html>");
-
-            player1Label.setFont(normal);
-            player1Label.setText("<html><div style='text-align:center;'>Player 1 (White)</div></html>");
+            player1Active.setVisible(false);
+            player2Active.setVisible(true);
         }
-
-        player2Label.revalidate(); player2Label.repaint();
-        player1Label.revalidate(); player1Label.repaint();
     }
 
     private void onSquareClicked(int r, int c) {

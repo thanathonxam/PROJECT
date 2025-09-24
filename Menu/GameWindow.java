@@ -16,58 +16,72 @@ public class GameWindow extends JFrame {
         // --- Panel ข้างๆ ---
         JPanel sidePanel = new JPanel();
         sidePanel.setPreferredSize(new Dimension(300, 1080));
-        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setLayout(null); // ใช้ absolute layout
+        sidePanel.setBackground(new Color(230, 230, 230));
 
         // --- Player Labels ---
-        JLabel player1 = new JLabel();
-        JLabel timer1Label = new JLabel("10:00");
-        JLabel player2 = new JLabel();
-        JLabel timer2Label = new JLabel("10:00");
+        JLabel player1Name = new JLabel("Player 1 (White)", SwingConstants.CENTER);
+        JLabel player1Active = new JLabel("Active", SwingConstants.CENTER);
+        JLabel timer1Label = new JLabel("10:00", SwingConstants.CENTER);
 
-        // ใช้เมธอดใหม่ในการสร้าง Panel สำหรับผู้เล่น
-        JPanel player1Panel = createPlayerPanel("Player 1", "White", player1, timer1Label);
-        JPanel player2Panel = createPlayerPanel("Player 2", "Black", player2, timer2Label);
+        JLabel player2Name = new JLabel("Player 2 (Black)", SwingConstants.CENTER);
+        JLabel player2Active = new JLabel("Active", SwingConstants.CENTER);
+        JLabel timer2Label = new JLabel("10:00", SwingConstants.CENTER);
+
+        // ฟอนต์
+        player1Name.setFont(new Font("", Font.BOLD, 28));
+        player2Name.setFont(new Font("", Font.BOLD, 28));
+        player1Active.setFont(new Font("", Font.BOLD, 22));
+        player2Active.setFont(new Font("", Font.BOLD, 22));
+        player1Active.setForeground(Color.GREEN);
+        player2Active.setForeground(Color.GREEN);
+        player1Active.setVisible(false);
+        player2Active.setVisible(false);
+
+        timer1Label.setFont(new Font("", Font.PLAIN, 24));
+        timer2Label.setFont(new Font("", Font.PLAIN, 24));
+
+        // Game Log
+        JTextArea messageArea = new JTextArea();
+        messageArea.setEditable(false);
+        messageArea.setFont(new Font("", Font.PLAIN, 20));
+        messageArea.setLineWrap(true);
+        messageArea.setWrapStyleWord(true);
+
+        JScrollPane scrollPane = new JScrollPane(messageArea);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("GAME LOG"));
 
         // --- ChessBoard ตรงกลาง ---
-        ChessBoard chessBoard = new ChessBoard(player1, player2, timer1Label, timer2Label);
+        ChessBoard chessBoard = new ChessBoard(
+            player1Name, player1Active, timer1Label,
+            player2Name, player2Active, timer2Label
+        );
         add(chessBoard, BorderLayout.CENTER);
 
-        // --- จัดวางใน sidePanel ---
-        sidePanel.add(Box.createVerticalStrut(20));
-        sidePanel.add(player1Panel);
-        sidePanel.add(Box.createVerticalGlue());
-        sidePanel.add(player2Panel);
-        sidePanel.add(Box.createVerticalStrut(20));
+        // Fix ตำแหน่ง (x, y, width, height)
+        player2Name.setBounds(30, 20, 240, 50);
+        player2Active.setBounds(30, 70, 240, 30);
+        timer2Label.setBounds(30, 110, 240, 40);
+
+        scrollPane.setBounds(10, 300, 280, 400);
+
+        player1Name.setBounds(30, 800, 240, 50);
+        player1Active.setBounds(30, 850, 240, 30);
+        timer1Label.setBounds(30, 890, 240, 40);
+
+        // --- ใส่ component ลง sidePanel ---
+        sidePanel.add(player1Name);
+        sidePanel.add(player1Active);
+        sidePanel.add(timer1Label);
+        sidePanel.add(player2Name);
+        sidePanel.add(player2Active);
+        sidePanel.add(timer2Label);
+        sidePanel.add(scrollPane);
 
         add(sidePanel, BorderLayout.WEST);
         setVisible(true);
 
-        // debug: print label instance ids
-        System.out.println("[GameWindow] player1 id=" + System.identityHashCode(player1) + " text='" + player1.getText() + "'");
-        System.out.println("[GameWindow] player2 id=" + System.identityHashCode(player2) + " text='" + player2.getText() + "'");
-
         // sync สถานะตอนเริ่มเกม
         chessBoard.updatePlayerLabelStyles();
-    }
-
-    // เมธอดใหม่: สำหรับสร้าง panel ของผู้เล่น (เพิ่มมาใหม่ทั้งหมด)
-    private JPanel createPlayerPanel(String name, String color, JLabel nameLabel, JLabel timerLabel) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.setOpaque(false);
-
-        // ใช้ HTML เพื่อขึ้นบรรทัดใหม่
-        nameLabel.setText("<html><div style='text-align: center;'>" + name + "<br>(" + color + ")</div></html>");
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        timerLabel.setFont(new Font("Monospaced", Font.PLAIN, 28));
-        timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        panel.add(nameLabel);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(timerLabel);
-        return panel;
     }
 }
