@@ -13,34 +13,26 @@ public class ChessBoard extends JPanel {
     // ใช้ GameClock แทนตัวแปรเวลาเดิม
     private GameClock gameClock;
 
-    // track whose turn it is; Player 1 will be WHITE
+    // ดูว่าเป็นเทิร์นของใคร
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
 
     private final Color light = new Color(181, 136, 99);
     private final Color dark = new Color(240, 217, 181);
-    private final Color select = new Color(250, 200, 0);
+    private final Color select = new Color(173, 216, 230);
     
-    private JLabel player1Label = null;
-    private JLabel player2Label = null;
-
     // Player UI
-    private JLabel player1Name, player1Active, timer1Label;
-    private JLabel player2Name, player2Active, timer2Label;
+    private JLabel player1Active;
+    private JLabel player2Active;
 
-      public ChessBoard(JLabel player1Name, JLabel player1Active, JLabel timer1Label,JLabel player2Name, JLabel player2Active, JLabel timer2Label) {
-        this.player1Name = player1Name;
+      public ChessBoard(JLabel player1Active, JLabel timer1Label, JLabel player2Active, JLabel timer2Label) {
         this.player1Active = player1Active;
-        this.timer1Label = timer1Label;
-
-        this.player2Name = player2Name;
         this.player2Active = player2Active;
-        this.timer2Label = timer2Label;
 
         // สร้าง GameClock (600 วินาที = 10 นาที)
         this.gameClock = new GameClock(600, timer1Label, timer2Label);
         this.gameClock.startClock();
 
-        // initialize player label styles
+        // อัพเดทสไตล์ป้ายชื่อผู้เล่น
         updatePlayerLabelStyles();
 
         setLayout(new GridLayout(8, 8));
@@ -144,7 +136,7 @@ public class ChessBoard extends JPanel {
     }
 
     private void onSquareClicked(int r, int c) {
-        // debug: print clicked square, piece there, and whose turn it is
+        // แสดงข้อมูลการคลิกว่าเป็นช่องไหน มีหมากอะไร และเทิร์นของใคร
         ChessPiece clicked = board[r][c];
         String pieceInfo;
         if (clicked == null) {
@@ -157,7 +149,7 @@ public class ChessBoard extends JPanel {
             System.out.println(String.format("Clicked (%d,%d) piece=%s currentTurn=%s", r, c, pieceInfo, currentTurn));
     // ถ้ายังไม่ได้เลือกหมาก
         if (selected == null && board[r][c] != null) {
-            // only allow selecting pieces of the side whose turn it is
+            // อนุญาตให้เลือกหมากได้เฉพาะของฝ่ายที่เป็นเทิร์นอยู่
             if (board[r][c].getColor() == currentTurn) {
                 selected = new Point(r, c);
             }

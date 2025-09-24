@@ -20,17 +20,21 @@ public class GameWindow extends JFrame {
         sidePanel.setBackground(new Color(230, 230, 230));
 
         // --- Player Labels ---
-        JLabel player1Name = new JLabel("Player 1 (White)", SwingConstants.CENTER);
-        JLabel player1Active = new JLabel("Active", SwingConstants.CENTER);
+        JLabel player1Name = new JLabel("PLAYER 1", SwingConstants.CENTER);
+        JLabel player1Color = new JLabel("(WHITE)", SwingConstants.CENTER);
+        JLabel player1Active = new JLabel("ACTIVE", SwingConstants.CENTER);
         JLabel timer1Label = new JLabel("10:00", SwingConstants.CENTER);
 
-        JLabel player2Name = new JLabel("Player 2 (Black)", SwingConstants.CENTER);
-        JLabel player2Active = new JLabel("Active", SwingConstants.CENTER);
+        JLabel player2Name = new JLabel("PLAYER 2", SwingConstants.CENTER);
+        JLabel player2Color = new JLabel("(BLACK)", SwingConstants.CENTER);
+        JLabel player2Active = new JLabel("ACTIVE", SwingConstants.CENTER);
         JLabel timer2Label = new JLabel("10:00", SwingConstants.CENTER);
 
         // ฟอนต์
         player1Name.setFont(new Font("", Font.BOLD, 28));
         player2Name.setFont(new Font("", Font.BOLD, 28));
+        player1Color.setFont(new Font("", Font.PLAIN, 24));
+        player2Color.setFont(new Font("", Font.PLAIN, 24));
         player1Active.setFont(new Font("", Font.BOLD, 22));
         player2Active.setFont(new Font("", Font.BOLD, 22));
         player1Active.setForeground(Color.GREEN);
@@ -51,27 +55,31 @@ public class GameWindow extends JFrame {
 
         // --- ChessBoard ตรงกลาง ---
         ChessBoard chessBoard = new ChessBoard(
-            player1Name, player1Active, timer1Label,
-            player2Name, player2Active, timer2Label
+             player1Active, timer1Label,
+             player2Active, timer2Label
         );
         add(chessBoard, BorderLayout.CENTER);
 
         // Fix ตำแหน่ง (x, y, width, height)
         player2Name.setBounds(30, 20, 240, 50);
-        player2Active.setBounds(30, 70, 240, 30);
-        timer2Label.setBounds(30, 110, 240, 40);
+        player2Color.setBounds(30, 70, 240, 30);
+        player2Active.setBounds(30, 110, 240, 30);
+        timer2Label.setBounds(30, 150, 240, 40);
 
         scrollPane.setBounds(10, 300, 280, 400);
 
         player1Name.setBounds(30, 800, 240, 50);
-        player1Active.setBounds(30, 850, 240, 30);
-        timer1Label.setBounds(30, 890, 240, 40);
+        player1Color.setBounds(30, 850, 240, 30);
+        player1Active.setBounds(30, 890, 240, 30);
+        timer1Label.setBounds(30, 930, 240, 40);
 
         // --- ใส่ component ลง sidePanel ---
         sidePanel.add(player1Name);
+        sidePanel.add(player1Color);
         sidePanel.add(player1Active);
         sidePanel.add(timer1Label);
         sidePanel.add(player2Name);
+        sidePanel.add(player2Color);
         sidePanel.add(player2Active);
         sidePanel.add(timer2Label);
         sidePanel.add(scrollPane);
