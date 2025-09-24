@@ -36,7 +36,7 @@ public class ChessBoard extends JPanel {
         updatePlayerLabelStyles();
 
         setLayout(new GridLayout(8, 8));
-        Font pieceFont = new Font("chess", Font.PLAIN, 50);
+        Font pieceFont = new Font("chess", Font.PLAIN, 100);
 
         // สร้างปุ่ม 8x8 (สลับสี)
         for (int r = 0; r < 8; r++) {

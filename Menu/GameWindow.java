@@ -8,14 +8,14 @@ public class GameWindow extends JFrame {
     public GameWindow() {
         setTitle("CHESS GAME");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 640); 
+        setSize(1920, 1080); 
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
 
         // --- Panel ข้างๆ ---
         JPanel sidePanel = new JPanel();
-        sidePanel.setPreferredSize(new Dimension(160, 640));
+        sidePanel.setPreferredSize(new Dimension(300, 1080));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
         // --- Player Labels ---
@@ -24,12 +24,10 @@ public class GameWindow extends JFrame {
         JLabel player2 = new JLabel();
         JLabel timer2Label = new JLabel("10:00");
 
-        
         // ใช้เมธอดใหม่ในการสร้าง Panel สำหรับผู้เล่น
         JPanel player1Panel = createPlayerPanel("Player 1", "White", player1, timer1Label);
         JPanel player2Panel = createPlayerPanel("Player 2", "Black", player2, timer2Label);
 
-    
         // --- ChessBoard ตรงกลาง ---
         ChessBoard chessBoard = new ChessBoard(player1, player2, timer1Label, timer2Label);
         add(chessBoard, BorderLayout.CENTER);
@@ -61,10 +59,10 @@ public class GameWindow extends JFrame {
 
         // ใช้ HTML เพื่อขึ้นบรรทัดใหม่
         nameLabel.setText("<html><div style='text-align: center;'>" + name + "<br>(" + color + ")</div></html>");
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        timerLabel.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        timerLabel.setFont(new Font("Monospaced", Font.PLAIN, 28));
         timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(nameLabel);
