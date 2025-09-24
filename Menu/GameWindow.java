@@ -16,7 +16,7 @@ public class GameWindow extends JFrame {
         // --- Panel ข้างๆ ---
         JPanel sidePanel = new JPanel();
         sidePanel.setPreferredSize(new Dimension(300, 1080));
-        sidePanel.setLayout(null); // ใช้ absolute layout
+        sidePanel.setLayout(null); 
         sidePanel.setBackground(new Color(230, 230, 230));
 
         // --- Player Labels ---
@@ -37,7 +37,6 @@ public class GameWindow extends JFrame {
         player2Active.setForeground(Color.GREEN);
         player1Active.setVisible(false);
         player2Active.setVisible(false);
-
         timer1Label.setFont(new Font("", Font.PLAIN, 24));
         timer2Label.setFont(new Font("", Font.PLAIN, 24));
 
@@ -47,7 +46,6 @@ public class GameWindow extends JFrame {
         messageArea.setFont(new Font("", Font.PLAIN, 20));
         messageArea.setLineWrap(true);
         messageArea.setWrapStyleWord(true);
-
         JScrollPane scrollPane = new JScrollPane(messageArea);
         scrollPane.setBorder(BorderFactory.createTitledBorder("GAME LOG"));
 

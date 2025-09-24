@@ -19,7 +19,7 @@ public class ChessBoard extends JPanel {
     private final Color light = new Color(181, 136, 99);
     private final Color dark = new Color(240, 217, 181);
     private final Color select = new Color(250, 200, 0);
-
+    
     private JLabel player1Label = null;
     private JLabel player2Label = null;
 
