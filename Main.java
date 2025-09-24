@@ -17,7 +17,7 @@ public class Main extends JFrame {
 
         // สร้าง BackgroundPanel และกำหนดรูปภาพพื้นหลัง
         // ตรวจสอบให้แน่ใจว่าไฟล์ chess.png อยู่ในตำแหน่งที่ถูกต้อง
-        BackgroundPanel backgroundPanel = new BackgroundPanel("C:\\Users\\user\\Desktop\\PROJECT-main\\chess.png");
+        BackgroundPanel backgroundPanel = new BackgroundPanel("chess.png");
         setContentPane(backgroundPanel);
 
         // Label หัวเรื่อง

@@ -126,12 +126,6 @@ public class ChessBoard extends JPanel {
                         ? Color.WHITE   // White → สีขาว
                         : Color.BLACK   // Black → สีดำ
                     );
-                // highlight all pieces belonging to the current player so it's obvious who can move
-                if (piece != null && piece.getColor() == currentTurn) {
-                    btn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2));
-                } else {
-                    btn.setBorder(null);
-                }
             }
         }
         gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
