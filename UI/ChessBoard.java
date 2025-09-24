@@ -128,6 +128,9 @@ public class ChessBoard extends JPanel {
 
         Font normal = player2Label.getFont().deriveFont(Font.PLAIN);
         Font bold   = player2Label.getFont().deriveFont(Font.BOLD);
+        
+        player1Label.setHorizontalAlignment(SwingConstants.CENTER);
+        player2Label.setHorizontalAlignment(SwingConstants.CENTER);
 
         if (currentTurn == ChessPiece.Color.WHITE) {
             player2Label.setFont(normal);
