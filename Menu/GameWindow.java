@@ -60,7 +60,7 @@ public class GameWindow extends JFrame {
         );
         add(chessBoard, BorderLayout.CENTER);
 
-        // Fix ตำแหน่ง (x, y, width, height)
+        // Fix ตำแหน่ง 
         player2Name.setBounds(30, 20, 240, 50);
         player2Color.setBounds(30, 70, 240, 30);
         player2Active.setBounds(30, 110, 240, 30);
@@ -91,3 +91,4 @@ public class GameWindow extends JFrame {
         chessBoard.updatePlayerLabelStyles();
     }
 }
+
