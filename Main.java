@@ -46,7 +46,7 @@ public class Main extends JFrame {
             }
         });
 
-        // ปุ่ม Settings
+        // ปุ่ม Continue
         JButton settingsButton = new JButton("Continue");
         settingsButton.setFont(new Font("Arial", Font.BOLD, 30));
         settingsButton.setBackground(new Color(30, 144, 255)); // สีน้ำเงิน
@@ -85,3 +85,4 @@ public class Main extends JFrame {
         setVisible(true);
     }
 }
+
