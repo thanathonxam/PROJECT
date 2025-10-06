@@ -2,6 +2,8 @@ package UI;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Objects;
+import java.util.List;
+import Logic.Move;
 import javax.swing.*;
 import Menu.*;
 
@@ -9,6 +11,7 @@ public class ChessBoard extends JPanel {
     private final JButton[][] squares = new JButton[8][8];
     private final ChessPiece[][] board = new ChessPiece[8][8];
     private Point selected = null;
+    private boolean gameOver = false;
 
     // ใช้ GameClock แทนตัวแปรเวลาเดิม
     private GameClock gameClock;
@@ -16,18 +19,21 @@ public class ChessBoard extends JPanel {
     // ดูว่าเป็นเทิร์นของใคร
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
 
-    private final Color light = new Color(181, 136, 99);
-    private final Color dark = new Color(240, 217, 181);
-    private final Color select = new Color(173, 216, 230);
+    private static final Color BOARD_DARK  = new Color(36, 40, 48);  //#242830
+    private static final Color BOARD_LIGHT = new Color(66, 74, 86);  //#424A56
+    private static final Color ACCENT      = new Color(0, 189, 166); // teal
+    private static final Color ACCENT_SOFT = new Color(0, 189, 166, 60); // teal โปร่ง
     
+
     // Player UI
     private JLabel player1Active;
     private JLabel player2Active;
 
-      public ChessBoard(JLabel player1Active, JLabel timer1Label, JLabel player2Active, JLabel timer2Label) {
+      public ChessBoard( JLabel player1Active, JLabel timer1Label, JLabel player2Active, JLabel timer2Label) {
+  
         this.player1Active = player1Active;
         this.player2Active = player2Active;
-
+       
         // สร้าง GameClock (600 วินาที = 10 นาที)
         this.gameClock = new GameClock(600, timer1Label, timer2Label);
         this.gameClock.startClock();
@@ -47,7 +53,9 @@ public class ChessBoard extends JPanel {
                 bt.setOpaque(true);
                 bt.setBorderPainted(false);
                 final int rr = r, cc = c;
-                bt.setBackground(((r + c) % 2 == 0) ? light : dark);
+                bt.setBackground(((r + c) % 2 == 0) ? BOARD_LIGHT : BOARD_DARK);
+                bt.setBorderPainted(true);
+                bt.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(0,0,0,50)));
                 bt.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -92,32 +100,47 @@ public class ChessBoard extends JPanel {
 }
 
     private void refreshBoard() {
+        List<Point> legalMoves = (selected != null) ? Move.getLegalMoves(board, selected.x, selected.y) : null;
+        
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 JButton btn = squares[r][c];
                 ChessPiece piece = board[r][c];
-                if (piece == null) {
+                // if this square is a legal move destination and empty, show a dot
+                boolean isLegal = (legalMoves != null && legalMoves.contains(new Point(r, c)));
+                if (isLegal && piece == null) {
+                    btn.setText("•");
+                    btn.setForeground(Color.YELLOW);
+                } else {
+                    if (piece == null) {
                         btn.setText("");
-                     } else {
-                             btn.setText(piece.getUnicode());
-                        }
+                    } else {
+                        btn.setText(piece.getUnicode());
+                    }
+                }
 
                 // พื้นหลังแล้ว ถ้าเป็นช่องที่เลือกไว้ให้ใช้สีไฮไลท์
                 Color bg;
                 if ((r + c) % 2 == 0) {
-                    bg = light;
-                    } else {
-                         bg = dark;
-                        }
+                    bg = BOARD_LIGHT;
+                } else {
+                    bg = BOARD_DARK;
+                }
                 if (selected != null && selected.x == r && selected.y == c) {
-                    bg = select;
+                    bg = ACCENT;
+                } else if (isLegal && piece != null) {
+                    // legal capture target
+                    bg = ACCENT_SOFT;
                 }
                 btn.setBackground(bg);
-                btn.setForeground(
-                    piece != null && piece.getColor() == ChessPiece.Color.WHITE 
-                        ? Color.WHITE   // White → สีขาว
-                        : Color.BLACK   // Black → สีดำ
+                // don't override a legal-move dot's color
+                if (!(isLegal && piece == null)) {
+                    btn.setForeground(
+                        piece != null && piece.getColor() == ChessPiece.Color.WHITE
+                            ? Color.WHITE
+                            : Color.BLACK
                     );
+                }
             }
         }
         gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
@@ -135,8 +158,43 @@ public class ChessBoard extends JPanel {
         }
     }
 
+    private void enableBoard() {
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            if (squares[r][c] != null) squares[r][c].setEnabled(true);
+        }
+    }
+}
+
+/** เริ่มเกมใหม่ (เรียกจากปุ่มใน GameWindow) */
+public void restartGame() {
+    // reset state
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            board[r][c] = null;
+        }
+    }
+    selected = null;
+    currentTurn = ChessPiece.Color.WHITE;
+    gameOver = false;
+
+    // ตั้งหมากใหม่ + เปิดกระดาน + อัปเดต UI
+    initStartingPosition();
+    enableBoard();
+    updatePlayerLabelStyles();
+    refreshBoard();
+
+    // รีเซ็ตนาฬิกา
+    if (gameClock != null) {
+        gameClock.resetClock(600); // 10 นาทีใหม่ (ปรับได้)
+        gameClock.startClock();
+        gameClock.switchTurn(currentTurn);
+        }
+    }
+
     private void onSquareClicked(int r, int c) {
         // แสดงข้อมูลการคลิกว่าเป็นช่องไหน มีหมากอะไร และเทิร์นของใคร
+        if (gameOver) return;
         ChessPiece clicked = board[r][c];
         String pieceInfo;
         if (clicked == null) {
@@ -158,7 +216,7 @@ public class ChessBoard extends JPanel {
         else if (selected != null && selected.x == r && selected.y == c) {
             selected = null;
         }
-    // ถ้าเลือกหมากแล้ว และกดช่องอื่น → ย้าย
+    // ถ้าเลือกหมากแล้ว และกดช่องอื่น → ย้าย (เฉพาะถ้าเป็นช่องที่ถูกไฮไลท์)
         else if (selected != null) {
             ChessPiece from = board[selected.x][selected.y];
             ChessPiece to = board[r][c];
@@ -166,16 +224,66 @@ public class ChessBoard extends JPanel {
             if (to != null && from != null && to.getColor() == from.getColor()) {
                 selected = new Point(r, c);
             } else {
-                board[r][c] = from;
-                board[selected.x][selected.y] = null;
-                selected = null;
-                // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
-                if (currentTurn == ChessPiece.Color.WHITE) {
+                // Only move if destination is a legal move for the selected piece
+                List<Point> legalMoves = Move.getLegalMoves(board, selected.x, selected.y);
+                boolean isLegal = false;
+                for (Point p : legalMoves) {
+                    if (p.x == r && p.y == c) { isLegal = true; break; }
+                }
+                if (isLegal) {
+                    board[r][c] = from;
+                    board[selected.x][selected.y] = null;
+                    selected = null;
+                    // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
+                    if (currentTurn == ChessPiece.Color.WHITE) {
                         currentTurn = ChessPiece.Color.BLACK;
                     } else {
-                         currentTurn = ChessPiece.Color.WHITE;
-                                }
-                updatePlayerLabelStyles();
+                        currentTurn = ChessPiece.Color.WHITE;
+                    }
+                    updatePlayerLabelStyles();
+                // ประเมินสถานะเกมจากมุมมองฝั่งที่จะเดินถัดไป
+                } else {
+                    // click on non-legal square -> ignore (keep selection)
+                }
+                Move.GameState state = Move.evaluateState(board, currentTurn);
+                switch (state) {
+			case CHECKMATE: {
+				// ถ้าฝั่งที่จะเดินอยู่ใน CHECKMATE => ฝ่ายที่เพิ่งเดิน ชนะ
+				String winner = (currentTurn == ChessPiece.Color.WHITE) ? "BLACK" : "WHITE";
+				JOptionPane.showMessageDialog(
+					null,
+					"CHECKMATE! " + winner + " Game won\n(Start a new game or exit from the menu)",
+					"END GAME - CHECKMATE",
+					JOptionPane.INFORMATION_MESSAGE
+				);
+				gameOver = true;
+				break;
+			}
+			case STALEMATE: {
+				JOptionPane.showMessageDialog(
+					null,
+					"DRAW (Stalemate)\nNo legal moves and not in check",
+					"END GAME - DRAW",
+					JOptionPane.INFORMATION_MESSAGE
+				);
+				gameOver = true;
+				break;
+			}
+			case CHECK: {
+				String checkedSide = (currentTurn == ChessPiece.Color.WHITE) ? "WHITE" : "BLACK";
+				JOptionPane.showMessageDialog(
+					null,
+					checkedSide + " is in CHECK! Please protect the king!",
+					"Warning - CHECK",
+					JOptionPane.WARNING_MESSAGE
+				);
+				break;
+			}
+			case NORMAL:
+				// เดินต่อได้ตามปกติ
+				break;
+		}
+
             }
         }
     refreshBoard(); // อัพเดท UI ทุกครั้ง

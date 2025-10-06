@@ -56,5 +56,19 @@ public class GameClock {
         int sec = seconds % 60;
         return String.format("%02d:%02d", min, sec);
     }
+    public void stopClock() {
+    if (clockTimer != null) {
+        clockTimer.stop();
+        }
+    }
+
+    public void resetClock(int startSeconds) {
+    this.timeWhite = startSeconds;
+    this.timeBlack = startSeconds;
+    this.currentTurn = ChessPiece.Color.WHITE; // เริ่มที่ขาว (ปรับได้)
+    if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
+    if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
+    }
+
 
 }
