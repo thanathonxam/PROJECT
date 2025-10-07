@@ -29,7 +29,7 @@ public class GameWindow extends JFrame {
         setLayout(new BorderLayout());
 
         // --- Panel ข้างๆ (พื้นหลังโทนเข้ม) ---
-        JPanel sidePanel = new ImageBackgroundPanel("sidepanel_bg_dark.png");
+        JPanel sidePanel = new ImageBackgroundPanel("sidepanel.png");
         sidePanel.setPreferredSize(new Dimension(300, 1080));
         sidePanel.setLayout(null);                  // สำคัญ: ใช้ null layout ที่ panel นี้
         add(sidePanel, BorderLayout.WEST);
