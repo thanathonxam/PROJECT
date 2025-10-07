@@ -69,6 +69,4 @@ public class GameClock {
     if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
     if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
     }
-
-
 }
