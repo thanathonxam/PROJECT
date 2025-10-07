@@ -1,9 +1,8 @@
 package End;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import Menu.*;
+import java.awt.event.*;
+import Start.Start;
 import setBackgroud.*;
 
 public class EndGameWindow extends JFrame {
@@ -11,7 +10,6 @@ public class EndGameWindow extends JFrame {
      * คอนสตรักเตอร์สำหรับสร้างหน้าต่าง End Game
      */
     public EndGameWindow() {
-        // --- การตั้งค่าหน้าต่างหลัก (JFrame) ---
         setTitle("Game Over");
         setSize(1920, 1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,7 +44,8 @@ public class EndGameWindow extends JFrame {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new GameWindow();
+                setVisible(false);
+                new Start();
             }
         });
 
@@ -60,7 +59,7 @@ public class EndGameWindow extends JFrame {
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0); // ออกจากโปรแกรม
+                System.exit(0);
             }
         });
         buttonPanel.add(backButton);

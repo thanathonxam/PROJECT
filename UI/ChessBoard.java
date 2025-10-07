@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Objects;
 import java.util.List;
-import Logic.Move;
+import Logic.*;
 import javax.swing.*;
 import End.*;
 import Menu.*;

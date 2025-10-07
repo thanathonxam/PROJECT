@@ -133,6 +133,5 @@ public class GameWindow extends JFrame {
         add(chessBoard, BorderLayout.CENTER);
 
         setVisible(true);
-
     }
 }

@@ -1,5 +1,4 @@
 package Logic;
-
 import UI.ChessPiece;
 import java.awt.Point;
 import java.util.ArrayList;
