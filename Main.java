@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import Menu.*;
+import setBackgroud.*;
 
 public class Main extends JFrame {
     public static void main(String[] args) {
@@ -16,12 +17,12 @@ public class Main extends JFrame {
         setResizable(false);
 
         //สร้าง icon เเละแสดงผล
-        ImageIcon icon = new ImageIcon("icon.png");
+        ImageIcon icon = new ImageIcon("Image/icon.png");
         setIconImage(icon.getImage());
 
         // สร้าง BackgroundPanel และกำหนดรูปภาพพื้นหลัง
         // ตรวจสอบให้แน่ใจว่าไฟล์ chess.png อยู่ในตำแหน่งที่ถูกต้อง
-        BackgroundPanel backgroundPanel = new BackgroundPanel("chess.png");
+        BackgroundPanel backgroundPanel = new BackgroundPanel("Image/chess.png");
         setContentPane(backgroundPanel);
 
         // Label หัวเรื่อง
@@ -85,7 +86,6 @@ public class Main extends JFrame {
 
         // เพิ่ม buttonPanel ลงใน backgroundPanel
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
-
         setVisible(true);
     }
 }

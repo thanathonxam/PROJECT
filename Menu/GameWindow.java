@@ -2,21 +2,7 @@ package Menu;
 import javax.swing.*;
 import java.awt.*;
 import UI.*;
-
-class ImageBackgroundPanel extends JPanel {
-    private transient Image bg;
-    ImageBackgroundPanel(String pathOrResource) {
-        setOpaque(false);
-        setLayout(null); 
-        java.net.URL url = getClass().getResource(pathOrResource);
-        bg = (url != null) ? new ImageIcon(url).getImage()
-                           : new ImageIcon(pathOrResource).getImage();
-    }
-    @Override protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (bg != null) g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
-    }
-}
+import setBackgroud.*;
 
 public class GameWindow extends JFrame {
 
@@ -29,13 +15,15 @@ public class GameWindow extends JFrame {
         setLayout(new BorderLayout());
 
         //สร้าง icon เเละแสดงผล
-        ImageIcon icon = new ImageIcon("icon.png");
+        ImageIcon icon = new ImageIcon("Image/icon.png");
         setIconImage(icon.getImage());
 
         // --- Panel ข้างๆ (พื้นหลังโทนเข้ม) ---
-        JPanel sidePanel = new ImageBackgroundPanel("sidepanel.png");
+        JPanel sidePanel = new BackgroundPanel("Image/sidepanel.png");
+        sidePanel.setOpaque(false);              // สำคัญ: ต้องโปร่งใส
         sidePanel.setPreferredSize(new Dimension(300, 1080));
         sidePanel.setLayout(null);                  // สำคัญ: ใช้ null layout ที่ panel นี้
+
         add(sidePanel, BorderLayout.WEST);
 
         // --- Player Labels ---
@@ -83,7 +71,6 @@ public class GameWindow extends JFrame {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createTitledBorder("GAME LOG"));
-        scrollPane.setForeground(sub);
 
         // ====== พิกัดที่ตรงกับกรอบในภาพพื้นหลัง (300x1080) ======
 
@@ -124,6 +111,9 @@ public class GameWindow extends JFrame {
         topPanel.add(player2Active);
         topPanel.add(timer2Label);
 
+        // LOG: กลาง
+        scrollPane.setBounds(0, 0, w, logH);
+        logPanel.add(scrollPane);
 
         // BOTTOM: PLAYER 1 (กรอบล่าง)
         player1Name.setBounds(10,  8,  w-20, 36);
@@ -135,18 +125,14 @@ public class GameWindow extends JFrame {
         bottomPanel.add(player1Active);
         bottomPanel.add(timer1Label);
 
-        // LOG: กลาง
-        scrollPane.setBounds(0, 0, w, logH);
-        logPanel.add(scrollPane);
-
         // --- กระดานหมากรุกตรงกลาง ---
         ChessBoard chessBoard = new ChessBoard(
                 player1Active, timer1Label,
-                player2Active, timer2Label,       
-                messageArea
+                player2Active, timer2Label
         );
         add(chessBoard, BorderLayout.CENTER);
 
         setVisible(true);
+
     }
 }
