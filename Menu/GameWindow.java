@@ -28,8 +28,12 @@ public class GameWindow extends JFrame {
         setResizable(false);
         setLayout(new BorderLayout());
 
+        //สร้าง icon เเละแสดงผล
+        ImageIcon icon = new ImageIcon("icon.png");
+        setIconImage(icon.getImage());
+
         // --- Panel ข้างๆ (พื้นหลังโทนเข้ม) ---
-        JPanel sidePanel = new ImageBackgroundPanel("sidepanel_bg_dark.png");
+        JPanel sidePanel = new ImageBackgroundPanel("sidepanel.png");
         sidePanel.setPreferredSize(new Dimension(300, 1080));
         sidePanel.setLayout(null);                  // สำคัญ: ใช้ null layout ที่ panel นี้
         add(sidePanel, BorderLayout.WEST);
@@ -79,6 +83,7 @@ public class GameWindow extends JFrame {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createTitledBorder("GAME LOG"));
+        scrollPane.setForeground(sub);
 
         // ====== พิกัดที่ตรงกับกรอบในภาพพื้นหลัง (300x1080) ======
 
@@ -119,9 +124,6 @@ public class GameWindow extends JFrame {
         topPanel.add(player2Active);
         topPanel.add(timer2Label);
 
-        // LOG: กลาง
-        scrollPane.setBounds(0, 0, w, logH);
-        logPanel.add(scrollPane);
 
         // BOTTOM: PLAYER 1 (กรอบล่าง)
         player1Name.setBounds(10,  8,  w-20, 36);
@@ -133,10 +135,15 @@ public class GameWindow extends JFrame {
         bottomPanel.add(player1Active);
         bottomPanel.add(timer1Label);
 
+        // LOG: กลาง
+        scrollPane.setBounds(0, 0, w, logH);
+        logPanel.add(scrollPane);
+
         // --- กระดานหมากรุกตรงกลาง ---
         ChessBoard chessBoard = new ChessBoard(
                 player1Active, timer1Label,
-                player2Active, timer2Label
+                player2Active, timer2Label,       
+                messageArea
         );
         add(chessBoard, BorderLayout.CENTER);
 

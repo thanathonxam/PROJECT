@@ -28,9 +28,10 @@ public class ChessBoard extends JPanel {
     // Player UI
     private JLabel player1Active;
     private JLabel player2Active;
+    private JTextArea logArea;
 
-      public ChessBoard( JLabel player1Active, JLabel timer1Label, JLabel player2Active, JLabel timer2Label) {
-  
+      public ChessBoard( JLabel player1Active, JLabel timer1Label, JLabel player2Active, JLabel timer2Label, JTextArea logArea) {
+        this.logArea = logArea;
         this.player1Active = player1Active;
         this.player2Active = player2Active;
        
@@ -144,8 +145,33 @@ public class ChessBoard extends JPanel {
             }
         }
         gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
-
     }
+    private static String toSquare(int r, int c) {
+    char file = (char)('a' + c);   // 0..7 -> a..h
+    int rank = 8 - r;               // 0..7 (บน->ล่าง) -> 8..1
+    return "" + file + rank;
+}
+
+private static String pieceGlyph(ChessPiece p) {
+    if (p == null) return "?";
+    switch (p.getType()) {
+        case KING:   return "\u265A"; // ♚
+        case QUEEN:  return "\u265B"; // ♛
+        case ROOK:   return "\u265C"; // ♜
+        case BISHOP: return "\u265D"; // ♝
+        case KNIGHT: return "\u265E"; // ♞
+        case PAWN:   return "\u265F"; // ♟
+        default:     return "?";
+    }
+}
+
+private void logMove(ChessPiece mover, int rFrom, int cFrom, int rTo, int cTo, boolean isCapture) {
+    if (logArea == null) return;
+    String arrow = isCapture ? "x" : "→";
+    String msg = String.format("%s %s%s%s\n", pieceGlyph(mover), toSquare(rFrom,cFrom), arrow, toSquare(rTo,cTo));
+    logArea.append(msg);
+    logArea.setCaretPosition(logArea.getDocument().getLength());
+}
 
     // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
@@ -215,6 +241,9 @@ public void restartGame() {
     // ถ้าคลิกซ้ำที่เดิม → ยกเลิก
         else if (selected != null && selected.x == r && selected.y == c) {
             selected = null;
+            repaint();            
+            return;              
+
         }
     // ถ้าเลือกหมากแล้ว และกดช่องอื่น → ย้าย (เฉพาะถ้าเป็นช่องที่ถูกไฮไลท์)
         else if (selected != null) {
@@ -231,9 +260,20 @@ public void restartGame() {
                     if (p.x == r && p.y == c) { isLegal = true; break; }
                 }
                 if (isLegal) {
-                    board[r][c] = from;
+                     // เก็บค่าไว้ก่อนจะย้ายจริง (เพราะเดี๋ยวจะถูกเขียนทับ)
+                    ChessPiece mover     = board[selected.x][selected.y];
+                    boolean   isCapture  = (board[r][c] != null);
+
+                    // ย้ายตัวบนกระดาน
+                    board[r][c] = board[selected.x][selected.y];
                     board[selected.x][selected.y] = null;
+
+                    // LOG การเดิน
+                    logMove(mover, selected.x, selected.y, r, c, isCapture);
+
+                    // เคลียร์การเลือกและสลับเทิร์นตามโค้ดเดิม
                     selected = null;
+
                     // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
                     if (currentTurn == ChessPiece.Color.WHITE) {
                         currentTurn = ChessPiece.Color.BLACK;

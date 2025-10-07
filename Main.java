@@ -15,6 +15,10 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
+        //สร้าง icon เเละแสดงผล
+        ImageIcon icon = new ImageIcon("icon.png");
+        setIconImage(icon.getImage());
+
         // สร้าง BackgroundPanel และกำหนดรูปภาพพื้นหลัง
         // ตรวจสอบให้แน่ใจว่าไฟล์ chess.png อยู่ในตำแหน่งที่ถูกต้อง
         BackgroundPanel backgroundPanel = new BackgroundPanel("chess.png");
