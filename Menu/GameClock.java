@@ -10,6 +10,8 @@ public class GameClock {
     private JLabel blackLabel;
     private Timer clockTimer;
     private ChessPiece.Color currentTurn;
+    @SuppressWarnings("unused")
+    private boolean paused = false;
 
     public GameClock(int startSeconds, JLabel whiteLabel, JLabel blackLabel) {
         this.timeWhite = startSeconds;
@@ -25,6 +27,9 @@ public class GameClock {
     }
     // เริ่มจับเวลา
     public void startClock() {
+        if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
+        if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
+            paused = false; // เริ่มถือว่าไม่พัก
         if (clockTimer != null) clockTimer.stop(); //หยุด timer เก่าถ้ามีอยู่แล้ว เพื่อป้องกันการมีหลายตัวนับซ้อนกัน
 
     clockTimer = new Timer(1000, new ActionListener() {
@@ -69,4 +74,15 @@ public class GameClock {
     if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
     if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
     }
+    public void pauseClock() {
+    if (clockTimer != null && clockTimer.isRunning()) clockTimer.stop();
+        paused = true;
+    }
+
+    public void resumeClock(ChessPiece.Color sideToMove) {
+     this.currentTurn = sideToMove;
+    if (clockTimer != null && !clockTimer.isRunning()) clockTimer.start();
+    paused = false;  // ← ใช้ตัวแปร
+    }
+
 }

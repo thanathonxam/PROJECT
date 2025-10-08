@@ -7,7 +7,8 @@ import setBackgroud.*;
 import java.awt.event.*;
 
 public class GameWindow extends JFrame {
-	
+
+	private ChessBoard chessBoard;
 	public GameWindow() {
 		setTitle("CHESS GAME");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,9 +47,15 @@ public class GameWindow extends JFrame {
 		StopButton.setPreferredSize(new Dimension(250, 60));	
 		StopButton.setBorder(BorderFactory.createRaisedBevelBorder());	
 		StopButton.setFocusable(false);
+		
 		StopButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// (LINE 53) [ADD] หยุดเวลา/ล็อคกระดานทันทีที่กด STOP
+					if (chessBoard != null) {
+					    chessBoard.pauseTimers();          // เมธอดนี้ต้องมีใน ChessBoard
+					    chessBoard.setEnabled(false); // ถ้ามีเมธอดล็อคคลิก
+				}
 				// สร้างหน้าต่าง Pause Menu
 					JDialog pauseDialog = new javax.swing.JDialog(GameWindow.this, "Game Paused", true);
 					pauseDialog.setSize(400, 200);
@@ -80,6 +87,10 @@ public class GameWindow extends JFrame {
 					resumeBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
+						if (chessBoard != null) {
+						    chessBoard.resumeTimers();         // เมธอดนี้ต้องมีใน ChessBoard
+						    chessBoard.setEnabled(true);  // ปลดล็อคกระดาน
+						}
 						pauseDialog.dispose();	
 						GameWindow.this.requestFocusInWindow();	
 					}
@@ -210,7 +221,7 @@ public class GameWindow extends JFrame {
 		bottomPanel.add(timer1Label);
 
 		// --- กระดานหมากรุกตรงกลาง ---
-		ChessBoard chessBoard = new ChessBoard(
+		chessBoard = new ChessBoard(
 				player1Active, timer1Label,
 				player2Active, timer2Label,
 				messageArea

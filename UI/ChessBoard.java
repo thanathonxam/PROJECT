@@ -5,11 +5,7 @@ import java.util.Objects;
 import java.util.List;
 import Logic.*;
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-
+import javax.swing.text.*;
 import End.*;
 import Menu.*;
 
@@ -21,6 +17,7 @@ public class ChessBoard extends JPanel{
 
     // ใช้ GameClock แทนตัวแปรเวลาเดิม
     private GameClock gameClock;
+    private boolean isPaused = false;
 
     // ดูว่าเป็นเทิร์นของใคร
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
@@ -155,8 +152,9 @@ public class ChessBoard extends JPanel{
                 }
             }
         }
-        gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
-
+        if (!isPaused && gameClock != null) {
+            gameClock.switchTurn(currentTurn);
+        }
     }
     
     private static String toSquare(int r, int c) {
@@ -206,6 +204,10 @@ public class ChessBoard extends JPanel{
 
     // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
+        boolean showWhite = (currentTurn == ChessPiece.Color.WHITE) && !isPaused;
+        boolean showBlack = (currentTurn == ChessPiece.Color.BLACK) && !isPaused;
+        player1Active.setVisible(showWhite);
+        player2Active.setVisible(showBlack);
         if (currentTurn == ChessPiece.Color.WHITE) {
             player1Active.setVisible(true);
             player2Active.setVisible(false);
@@ -252,6 +254,7 @@ public void restartGame() {
     private void onSquareClicked(int r, int c) {
         // แสดงข้อมูลการคลิกว่าเป็นช่องไหน มีหมากอะไร และเทิร์นของใคร
         if (gameOver) return;
+        if (isPaused) return;
         ChessPiece clicked = board[r][c];
         String pieceInfo;
         if (clicked == null) {
@@ -336,4 +339,36 @@ public void restartGame() {
         }
     refreshBoard(); // อัพเดท UI ทุกครั้ง
     }
+
+    public void pauseTimers() {
+        if (isPaused) return;
+            isPaused = true;
+        if (gameClock != null) gameClock.pauseClock();   // ต้องมีใน GameClock
+            setBoardEnabled(false);      // กันคลิกขณะพัก
+            updatePlayerLabelStyles();   // ซ่อน ACTIVE
+    }
+
+    public void resumeTimers() {
+        if (!isPaused) return;
+            isPaused = false;
+        if (gameClock != null) gameClock.resumeClock(currentTurn); // ต้องมีใน GameClock
+            setBoardEnabled(true);       // เปิดคลิกคืน
+            updatePlayerLabelStyles();   // แสดง ACTIVE ฝั่งที่ถึงตา
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 8; c++) {
+                if (squares[r][c] != null) squares[r][c].setEnabled(enabled);
+            }
+        }
+    }
+
+    /** เรียกจาก GameWindow */
+    public void setBoardEnabled(boolean enabled) {
+        setEnabled(enabled);
+    }
+
 }
