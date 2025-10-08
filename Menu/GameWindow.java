@@ -62,14 +62,15 @@ public class GameWindow extends JFrame {
         player2Active.setVisible(false);
 
         // --- Game Log ---
-        JTextArea messageArea = new JTextArea();
+        JTextPane messageArea = new JTextPane();
         messageArea.setEditable(false);
+        messageArea.setFont(messageArea.getFont().deriveFont(14f));
+        messageArea.setOpaque(false);   // ให้กลืนพื้นหลังได้เหมือนเดิม
+        messageArea.setForeground(text);   // สีตัวอักษรปกติของ LOG (ใช้กับข้อความช่อง เช่น "e4")
+        JScrollPane scrollPane = new JScrollPane(messageArea);
         messageArea.setFont(new Font("", Font.PLAIN, 20));
-        messageArea.setLineWrap(true);
-        messageArea.setWrapStyleWord(true);
         messageArea.setForeground(text);
         messageArea.setOpaque(false);
-        JScrollPane scrollPane = new JScrollPane(messageArea);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createTitledBorder("GAME LOG"));
@@ -130,7 +131,8 @@ public class GameWindow extends JFrame {
         // --- กระดานหมากรุกตรงกลาง ---
         ChessBoard chessBoard = new ChessBoard(
                 player1Active, timer1Label,
-                player2Active, timer2Label
+                player2Active, timer2Label,
+                messageArea
         );
         add(chessBoard, BorderLayout.CENTER);
 

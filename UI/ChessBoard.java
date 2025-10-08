@@ -5,6 +5,11 @@ import java.util.Objects;
 import java.util.List;
 import Logic.*;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+
 import End.*;
 import Menu.*;
 
@@ -29,11 +34,13 @@ public class ChessBoard extends JPanel{
     // Player UI
     private JLabel player1Active;
     private JLabel player2Active;
+    private JTextPane logArea;
 
-      public ChessBoard( JLabel player1Active, JLabel timer1Label, JLabel player2Active, JLabel timer2Label) {
-  
+      public ChessBoard(JLabel player1Active, JLabel timer1Label,JLabel player2Active, JLabel timer2Label,JTextPane logArea) {
+
         this.player1Active = player1Active;
         this.player2Active = player2Active;
+        this.logArea = logArea;
        
         // สร้าง GameClock (600 วินาที = 10 นาที)
         this.gameClock = new GameClock(600, timer1Label, timer2Label);
@@ -147,6 +154,50 @@ public class ChessBoard extends JPanel{
         gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
 
     }
+    
+    private static String toSquare(int r, int c) {
+    // r: 0..7 (บน->ล่าง = 8..1), c: 0..7 (ซ้าย->ขวา = a..h)
+    char file = (char) ('a' + c);
+    int rank = 8 - r;
+    return "" + file + rank;
+}
+
+    private static String pieceGlyph(ChessPiece p) {
+    if (p == null) return "?";
+    switch (p.getType()) {
+        case KING:   return "\u265A"; // ♚
+        case QUEEN:  return "\u265B"; // ♛
+        case ROOK:   return "\u265C"; // ♜
+        case BISHOP: return "\u265D"; // ♝
+        case KNIGHT: return "\u265E"; // ♞
+        case PAWN:   return "\u265F"; // ♟
+        default:     return "";
+    }
+}
+    private static void appendStyled(JTextPane pane, String text, Color color, boolean bold) {
+            StyledDocument doc = pane.getStyledDocument();
+            SimpleAttributeSet attr = new SimpleAttributeSet();
+        if (color != null) StyleConstants.setForeground(attr, color);
+            StyleConstants.setBold(attr, bold);
+        try {
+            doc.insertString(doc.getLength(), text, attr);
+        } catch (BadLocationException ignored) {}
+        pane.setCaretPosition(doc.getLength());
+    }
+
+    private void logMove(ChessPiece mover, int rFrom, int cFrom, int rTo, int cTo, boolean isCapture) {
+        if (logArea == null || mover == null) return;
+            String glyph = pieceGlyph(mover);
+            Color base = logArea.getForeground();
+        if (!glyph.isEmpty()) {
+            Color pieceColor = (mover.getColor() == ChessPiece.Color.WHITE) ? Color.WHITE : Color.BLACK;
+            appendStyled(logArea, glyph + " ", pieceColor, true);
+        }
+        appendStyled(logArea, toSquare(rFrom, cFrom) + "→" + toSquare(rTo, cTo) + "\n", base, false);
+    }
+
+
+
 
     // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
@@ -234,6 +285,9 @@ public void restartGame() {
                 if (isLegal) {
                     board[r][c] = from;
                     board[selected.x][selected.y] = null;
+                    ChessPiece mover = from;
+                    boolean isCapture = (to != null);
+                    logMove(mover, selected.x, selected.y, r, c, isCapture);
                     selected = null;
                     // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
                     if (currentTurn == ChessPiece.Color.WHITE) {
