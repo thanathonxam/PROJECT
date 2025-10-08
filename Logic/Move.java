@@ -156,6 +156,16 @@ public class Move {
 		}
 		return null;
 	}
+	// คืนตำแหน่งราชาของสีที่ระบุ (เพื่อให้ UI เรียกใช้ได้)
+	public static Point getKingSquare(ChessPiece[][] board, ChessPiece.Color color) {
+    	return findKing(board, color);
+	}	
+
+	// ถ้าฝั่งที่ระบุ 'ถูก Rook/Check' ให้คืนตำแหน่งราชา; ถ้าไม่ถูก ให้คืน null
+	public static Point getCheckSquare(ChessPiece[][] board, ChessPiece.Color color) {
+    	if (!isInCheck(board, color)) return null;
+    	return findKing(board, color);
+	}
 
 	// Return true if `color`'s king is under attack on given board
 	public static boolean isInCheck(ChessPiece[][] board, ChessPiece.Color color) {

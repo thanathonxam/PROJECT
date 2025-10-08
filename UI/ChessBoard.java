@@ -109,7 +109,7 @@ public class ChessBoard extends JPanel{
 
     private void refreshBoard() {
         List<Point> legalMoves = (selected != null) ? Move.getLegalMoves(board, selected.x, selected.y) : null;
-        
+        Point inCheck = Move.getCheckSquare(board, currentTurn);
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 JButton btn = squares[r][c];
@@ -140,6 +140,10 @@ public class ChessBoard extends JPanel{
                     // legal capture target
                     bg = ACCENT_SOFT;
                 }
+                if (inCheck != null && r == inCheck.x && c == inCheck.y) {
+                    bg = new Color(200, 0, 0); // ไฮไลท์แดงเมื่อราชาถูกรุก
+                }
+
                 btn.setBackground(bg);
                 // don't override a legal-move dot's color
                 if (!(isLegal && piece == null)) {
@@ -304,22 +308,22 @@ public void restartGame() {
                 switch (state) {
 			case CHECKMATE: {
                 gameClock.stopClock(); // หยุดนาฬิกาเมื่อเกมจบ
+                gameOver = true; // กันไม่ให้กดต่อ
+                java.awt.Window win = SwingUtilities.getWindowAncestor(this);
+                if (win != null) win.dispose(); // ปิดหน้าต่างเกมเดิม (GameWindow)
                 new EndGameWindow();
 				break;
 			}
 			case STALEMATE: {
+                gameOver = true;
+                java.awt.Window win = SwingUtilities.getWindowAncestor(this);
+                if (win != null) win.dispose();
                 gameClock.stopClock();
-				new EndGameWindow();
+				new DrawGameWindow();
 				break;
 			}
 			case CHECK: {
-				String checkedSide = (currentTurn == ChessPiece.Color.WHITE) ? "WHITE" : "BLACK";
-				JOptionPane.showMessageDialog(
-					null,
-					checkedSide + " is in CHECK! Please protect the king!",
-					"Warning - CHECK",
-					JOptionPane.WARNING_MESSAGE
-				);
+				// ราชาถูกเช็ค (ไฮไลท์ใน refreshBoard()
 				break;
 			}
 			case NORMAL:
