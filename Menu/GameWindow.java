@@ -37,7 +37,7 @@ public class GameWindow extends JFrame {
 		int stopButtonW = w; 
 		int stopButtonH = 60; 
 		int stopButtonX = x; 
-		int stopButtonY = 1080 - 24 - stopButtonH - 20; 
+		int stopButtonY = 1080 - 24 - stopButtonH - 55; 
         
 		JButton StopButton = new JButton("STOP GAME");
 		StopButton.setFont(new Font("Arial", Font.BOLD, 30));	
