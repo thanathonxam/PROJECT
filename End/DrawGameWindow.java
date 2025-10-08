@@ -2,6 +2,8 @@ package End;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+
 import Start.Start;
 import setBackgroud.*;
 
@@ -44,6 +46,10 @@ public class DrawGameWindow extends JFrame {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                File fileToDelete = new File("Savefile/filegame.dat");
+                if (fileToDelete.exists()) {
+                    fileToDelete.delete(); // ลบไฟล์ถ้ามีอยู่
+                }
                 setVisible(false);
                 new Start();
             }
