@@ -2,10 +2,17 @@ package Start;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import File.SaveBoard;
 import setBackgroud.*;
 import Menu.*;
+import UI.ChessBoard;
 
 public class Start extends JFrame {
+    ChessBoard ChessBoard;
+     GameClock GameClock;
+
+    
     public Start() {
         setTitle("CHESS GAME");
         setSize(1920, 1080);
@@ -84,5 +91,19 @@ public class Start extends JFrame {
         // เพิ่ม buttonPanel ลงใน backgroundPanel
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
         setVisible(true);
+
+        settingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            boolean success = SaveBoard.load(ChessBoard, GameClock, "File/savegame.dat");
+            if(success) {
+                 JOptionPane.showMessageDialog(null, "Game loaded!");
+                ChessBoard.refreshBoard(); // อัพเดท UI
+                    } else {
+                            JOptionPane.showMessageDialog(null, "Failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+
+            }
+        });
     }
 }

@@ -5,7 +5,11 @@ import java.util.Objects;
 import java.util.List;
 import Logic.*;
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+
 import End.*;
 import Menu.*;
 
@@ -17,10 +21,18 @@ public class ChessBoard extends JPanel{
 
     // ใช้ GameClock แทนตัวแปรเวลาเดิม
     private GameClock gameClock;
-    private boolean isPaused = false;
 
     // ดูว่าเป็นเทิร์นของใคร
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
+
+    // getter / setter สำหรับ SaveManager
+    public ChessPiece[][] getBoard() { return board; }
+    public void setBoard(ChessPiece[][] b) { 
+    for(int r=0;r<8;r++) System.arraycopy(b[r],0,board[r],0,8);
+    }
+    public ChessPiece.Color getCurrentTurn() { return currentTurn; }
+    public void setCurrentTurn(ChessPiece.Color turn) { currentTurn = turn; }
+
 
     private static final Color BOARD_DARK  = new Color(36, 40, 48);  //#242830
     private static final Color BOARD_LIGHT = new Color(66, 74, 86);  //#424A56
@@ -104,9 +116,9 @@ public class ChessBoard extends JPanel{
     board[7][7] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
 }
 
-    private void refreshBoard() {
+    public void refreshBoard() {
         List<Point> legalMoves = (selected != null) ? Move.getLegalMoves(board, selected.x, selected.y) : null;
-        Point inCheck = Move.getCheckSquare(board, currentTurn);
+        
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 JButton btn = squares[r][c];
@@ -137,10 +149,6 @@ public class ChessBoard extends JPanel{
                     // legal capture target
                     bg = ACCENT_SOFT;
                 }
-                if (inCheck != null && r == inCheck.x && c == inCheck.y) {
-                    bg = new Color(200, 0, 0); // ไฮไลท์แดงเมื่อราชาถูกรุก
-                }
-
                 btn.setBackground(bg);
                 // don't override a legal-move dot's color
                 if (!(isLegal && piece == null)) {
@@ -152,9 +160,8 @@ public class ChessBoard extends JPanel{
                 }
             }
         }
-        if (!isPaused && gameClock != null) {
-            gameClock.switchTurn(currentTurn);
-        }
+        gameClock.switchTurn(currentTurn); //  แจ้งให้ clock รู้ว่าฝั่งไหนต้องเดิน
+
     }
     
     private static String toSquare(int r, int c) {
@@ -195,8 +202,7 @@ public class ChessBoard extends JPanel{
             Color pieceColor = (mover.getColor() == ChessPiece.Color.WHITE) ? Color.WHITE : Color.BLACK;
             appendStyled(logArea, glyph + " ", pieceColor, true);
         }
-        String mid = isCapture ? "x" : "→";  // ถ้ากิน = x, ถ้าไม่กิน = →
-        appendStyled(logArea, toSquare(rFrom, cFrom) +  mid  + toSquare(rTo, cTo) + "\n", base, false);
+        appendStyled(logArea, toSquare(rFrom, cFrom) + "→" + toSquare(rTo, cTo) + "\n", base, false);
     }
 
 
@@ -204,10 +210,6 @@ public class ChessBoard extends JPanel{
 
     // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
-        boolean showWhite = (currentTurn == ChessPiece.Color.WHITE) && !isPaused;
-        boolean showBlack = (currentTurn == ChessPiece.Color.BLACK) && !isPaused;
-        player1Active.setVisible(showWhite);
-        player2Active.setVisible(showBlack);
         if (currentTurn == ChessPiece.Color.WHITE) {
             player1Active.setVisible(true);
             player2Active.setVisible(false);
@@ -254,7 +256,6 @@ public void restartGame() {
     private void onSquareClicked(int r, int c) {
         // แสดงข้อมูลการคลิกว่าเป็นช่องไหน มีหมากอะไร และเทิร์นของใคร
         if (gameOver) return;
-        if (isPaused) return;
         ChessPiece clicked = board[r][c];
         String pieceInfo;
         if (clicked == null) {
@@ -312,22 +313,22 @@ public void restartGame() {
                 switch (state) {
 			case CHECKMATE: {
                 gameClock.stopClock(); // หยุดนาฬิกาเมื่อเกมจบ
-                gameOver = true; // กันไม่ให้กดต่อ
-                java.awt.Window win = SwingUtilities.getWindowAncestor(this);
-                if (win != null) win.dispose(); // ปิดหน้าต่างเกมเดิม (GameWindow)
                 new EndGameWindow();
 				break;
 			}
 			case STALEMATE: {
-                gameOver = true;
-                java.awt.Window win = SwingUtilities.getWindowAncestor(this);
-                if (win != null) win.dispose();
                 gameClock.stopClock();
-				new DrawGameWindow();
+				new EndGameWindow();
 				break;
 			}
 			case CHECK: {
-				// ราชาถูกเช็ค (ไฮไลท์ใน refreshBoard()
+				String checkedSide = (currentTurn == ChessPiece.Color.WHITE) ? "WHITE" : "BLACK";
+				JOptionPane.showMessageDialog(
+					null,
+					checkedSide + " is in CHECK! Please protect the king!",
+					"Warning - CHECK",
+					JOptionPane.WARNING_MESSAGE
+				);
 				break;
 			}
 			case NORMAL:
@@ -339,36 +340,4 @@ public void restartGame() {
         }
     refreshBoard(); // อัพเดท UI ทุกครั้ง
     }
-
-    public void pauseTimers() {
-        if (isPaused) return;
-            isPaused = true;
-        if (gameClock != null) gameClock.pauseClock();   // ต้องมีใน GameClock
-            setBoardEnabled(false);      // กันคลิกขณะพัก
-            updatePlayerLabelStyles();   // ซ่อน ACTIVE
-    }
-
-    public void resumeTimers() {
-        if (!isPaused) return;
-            isPaused = false;
-        if (gameClock != null) gameClock.resumeClock(currentTurn); // ต้องมีใน GameClock
-            setBoardEnabled(true);       // เปิดคลิกคืน
-            updatePlayerLabelStyles();   // แสดง ACTIVE ฝั่งที่ถึงตา
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-            for (int r = 0; r < 8; r++) {
-                for (int c = 0; c < 8; c++) {
-                if (squares[r][c] != null) squares[r][c].setEnabled(enabled);
-            }
-        }
-    }
-
-    /** เรียกจาก GameWindow */
-    public void setBoardEnabled(boolean enabled) {
-        setEnabled(enabled);
-    }
-
 }
