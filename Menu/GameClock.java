@@ -70,18 +70,14 @@ public class GameClock {
     if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
     }
 
-    // --- Getter/Setter สำหรับ SaveManager ---
-    public int getTimeWhite() { return timeWhite; }
-    public int getTimeBlack() { return timeBlack; }
-    public ChessPiece.Color getCurrentTurn() { return currentTurn; }
-
-    public void resetClockWithTime(int tWhite, int tBlack, ChessPiece.Color turn) {
-    this.timeWhite = tWhite;
-    this.timeBlack = tBlack;
-    this.currentTurn = turn;
-    if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
-    if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
+    public int[] getTimes() {
+        return new int[] { timeWhite, timeBlack };
     }
 
+    public void setTimes(int[] times) {
+        timeWhite = times[0];
+        timeBlack = times[1];
+        if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
+        if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
+    }
 }
- 
