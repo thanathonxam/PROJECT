@@ -197,7 +197,8 @@ public class ChessBoard extends JPanel{
             Color pieceColor = (mover.getColor() == ChessPiece.Color.WHITE) ? Color.WHITE : Color.BLACK;
             appendStyled(logArea, glyph + " ", pieceColor, true);
         }
-        appendStyled(logArea, toSquare(rFrom, cFrom) + "→" + toSquare(rTo, cTo) + "\n", base, false);
+        String mid = isCapture ? "x" : "→";  // ถ้ากิน = x, ถ้าไม่กิน = →
+        appendStyled(logArea, toSquare(rFrom, cFrom) +  mid  + toSquare(rTo, cTo) + "\n", base, false);
     }
 
 
