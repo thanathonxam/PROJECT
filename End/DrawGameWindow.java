@@ -17,6 +17,7 @@ public class DrawGameWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+        setUndecorated(true);
 
         //สร้าง icon เเละแสดงผล
         ImageIcon icon = new ImageIcon("Image/icon.png");
@@ -74,4 +75,5 @@ public class DrawGameWindow extends JFrame {
         setVisible(true);
     }
 }
+
 
