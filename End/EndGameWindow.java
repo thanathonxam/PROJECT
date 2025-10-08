@@ -18,10 +18,6 @@ public class EndGameWindow extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setUndecorated(true);
-
-        //สร้าง icon เเละแสดงผล
-        ImageIcon icon = new ImageIcon("Image/icon.png");
-        setIconImage(icon.getImage());
         
         BackgroundPanel backgroundPanel = new BackgroundPanel("Image/End.png");
         setContentPane(backgroundPanel);
@@ -75,4 +71,5 @@ public class EndGameWindow extends JFrame {
         setVisible(true);
     }
 }
+
 
