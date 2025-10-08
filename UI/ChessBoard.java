@@ -351,4 +351,27 @@ public void loadGame(File file) {
         e.printStackTrace();
     }
 }
+
+// Enable or disable the board for moves
+public void setBoardEnabled(boolean enabled) {
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            squares[r][c].setEnabled(enabled);
+        }
+    }
+}
+
+// Pause the game clock
+public void pauseClock() {
+    if (gameClock != null) {
+        gameClock.pause();
+    }
+}
+
+// Resume the game clock
+public void resumeClock() {
+    if (gameClock != null) {
+        gameClock.resume();
+    }
+}
 }

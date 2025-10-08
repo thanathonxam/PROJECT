@@ -9,7 +9,6 @@ import java.io.*;
 
 public class GameWindow extends JFrame {
 	
-	// Add a field to keep reference to the chessBoard
 	private ChessBoard chessBoard;
 	
 	public GameWindow() {
@@ -53,62 +52,81 @@ public class GameWindow extends JFrame {
 		StopButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// สร้างหน้าต่าง Pause Menu
-					JDialog pauseDialog = new javax.swing.JDialog(GameWindow.this, "Game Paused", true);
-					pauseDialog.setSize(400, 200);
-					pauseDialog.setLayout(new java.awt.GridLayout(3, 1, 10, 10));
-					pauseDialog.setLocationRelativeTo(GameWindow.this);
+				// Pause the game: disable the board and stop the clock
+				chessBoard.setBoardEnabled(false); // <-- Add this method to ChessBoard
+				chessBoard.pauseClock();           // <-- Add this method to ChessBoard
 
-					JButton resumeBtn = new javax.swing.JButton("Resume Game");
-					resumeBtn.setFont(new Font("Arial", Font.BOLD, 30));	
-					resumeBtn.setBackground(new Color(46, 204, 113));
-					resumeBtn.setPreferredSize(new Dimension(250, 60));	
-					resumeBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
-					resumeBtn.setForeground(Color.WHITE);
+				JDialog pauseDialog = new javax.swing.JDialog(GameWindow.this, "Game Paused", true);
+				pauseDialog.setSize(300, 500);
+				pauseDialog.setLayout(new java.awt.GridLayout(4, 1, 10, 10));
+				pauseDialog.setLocationRelativeTo(GameWindow.this);
 
-					JButton DrawBtn = new javax.swing.JButton("Draw Game");
-					DrawBtn.setFont(new Font("Arial", Font.BOLD, 30));	
-					DrawBtn.setBackground(new Color(30, 144, 255));
-					DrawBtn.setPreferredSize(new Dimension(250, 60));	
-					DrawBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
-					DrawBtn.setForeground(Color.WHITE);
+				JButton resumeBtn = new javax.swing.JButton("Resume Game");
+				resumeBtn.setFont(new Font("Arial", Font.BOLD, 30));	
+				resumeBtn.setBackground(new Color(46, 204, 113));
+				resumeBtn.setPreferredSize(new Dimension(250, 60));	
+				resumeBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
+				resumeBtn.setForeground(Color.WHITE);
 
-					JButton exitBtn = new javax.swing.JButton("Exit Game");
-					exitBtn.setFont(new Font("Arial", Font.BOLD, 30));	
-					exitBtn.setBackground(new Color(255, 69, 0));
-					exitBtn.setPreferredSize(new Dimension(250, 60));	
-					exitBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
-					exitBtn.setForeground(Color.WHITE);				
+				JButton SaveBtn = new javax.swing.JButton("Save Game");
+				SaveBtn.setFont(new Font("Arial", Font.BOLD, 30));	
+				SaveBtn.setBackground(new Color(46, 204, 113));
+				SaveBtn.setPreferredSize(new Dimension(250, 60));	
+				SaveBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
+				SaveBtn.setForeground(Color.WHITE);
 
-					// ปุ่ม Resume
-					resumeBtn.addActionListener(new ActionListener() {
+				JButton DrawBtn = new javax.swing.JButton("Draw Game");
+				DrawBtn.setFont(new Font("Arial", Font.BOLD, 30));	
+				DrawBtn.setBackground(new Color(30, 144, 255));
+				DrawBtn.setPreferredSize(new Dimension(250, 60));	
+				DrawBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
+				DrawBtn.setForeground(Color.WHITE);
+
+				JButton exitBtn = new javax.swing.JButton("Exit Game");
+				exitBtn.setFont(new Font("Arial", Font.BOLD, 30));	
+				exitBtn.setBackground(new Color(255, 69, 0));
+				exitBtn.setPreferredSize(new Dimension(250, 60));	
+				exitBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
+				exitBtn.setForeground(Color.WHITE);				
+
+				resumeBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						// Save game before resuming
+						chessBoard.setBoardEnabled(true); // <-- Enable board again
+						chessBoard.resumeClock();         // <-- Resume the clock
+						pauseDialog.dispose();
+						GameWindow.this.requestFocusInWindow();
+					}
+				});
+
+				SaveBtn.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent ev) {
 						chessBoard.saveGame(new File("Savefile/filegame.dat"));
 						pauseDialog.dispose();	
 						GameWindow.this.requestFocusInWindow();	
 						System.exit(0);
 					}
-					});
+				});
 
-					DrawBtn.addActionListener(new ActionListener() {
+				DrawBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
 						new DrawGameWindow();
 						pauseDialog.dispose();
 						setVisible(false);
 					}
-					});
+				});
 
-					// ปุ่ม Exit
-					exitBtn.addActionListener(new ActionListener() {
+				exitBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
 						System.exit(0); // ปิดเกมทั้งหมด
 					}
-					});
+				});
+
 				pauseDialog.add(resumeBtn);
+				pauseDialog.add(SaveBtn);
 				pauseDialog.add(DrawBtn);
 				pauseDialog.add(exitBtn);
 				pauseDialog.setVisible(true);	
