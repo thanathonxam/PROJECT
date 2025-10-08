@@ -1,8 +1,6 @@
 package UI;
 
-import java.io.Serializable;
-
-public class ChessPiece implements Serializable {
+public class ChessPiece {
     public enum Color { BLACK, WHITE }
     public enum Type { KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN }
 
@@ -18,14 +16,25 @@ public class ChessPiece implements Serializable {
     public Type getType() { return type; }
 
     public String getUnicode() {
+    if (color == Color.WHITE) {
         switch (type) {
-            case KING:   return color == Color.WHITE ? "\u2654" : "\u265A";
-            case QUEEN:  return color == Color.WHITE ? "\u2655" : "\u265B";
-            case ROOK:   return color == Color.WHITE ? "\u2656" : "\u265C";
-            case BISHOP: return color == Color.WHITE ? "\u2657" : "\u265D";
-            case KNIGHT: return color == Color.WHITE ? "\u2658" : "\u265E";
-            case PAWN:   return color == Color.WHITE ? "\u2659" : "\u265F";
+            case KING:   return "\u265A"; 
+            case QUEEN:  return "\u265B"; 
+            case ROOK:   return "\u265C"; 
+            case BISHOP: return "\u265D"; 
+            case KNIGHT: return "\u265E"; 
+            case PAWN:   return "\u265F"; 
         }
-        return "";
+    } else { // BLACK
+        switch (type) {
+            case KING:   return "\u265A"; 
+            case QUEEN:  return "\u265B"; 
+            case ROOK:   return "\u265C"; 
+            case BISHOP: return "\u265D"; 
+            case KNIGHT: return "\u265E"; 
+            case PAWN:   return "\u265F"; 
+        }
     }
+    return "";
+}
 }
