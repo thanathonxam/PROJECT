@@ -1,11 +1,10 @@
 package Logic;
 import UI.ChessPiece;
 import java.awt.Point;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Move implements Serializable{
+public class Move {
 	// Return list of legal destination squares for piece at (r,c)
 	// This filters pseudo-legal moves to remove any that leave own king in check.
 	public static List<Point> getLegalMoves(ChessPiece[][] board, int r, int c) {
@@ -138,7 +137,7 @@ public class Move implements Serializable{
 		return false; // king is safe
 	}
 
-	public static ChessPiece[][] copyBoard(ChessPiece[][] board) {
+	private static ChessPiece[][] copyBoard(ChessPiece[][] board) {
 		ChessPiece[][] copy = new ChessPiece[8][8];
 		for (int r = 0; r < 8; r++) {
 			System.arraycopy(board[r], 0, copy[r], 0, 8);
@@ -156,6 +155,16 @@ public class Move implements Serializable{
 			}
 		}
 		return null;
+	}
+	// คืนตำแหน่งราชาของสีที่ระบุ (เพื่อให้ UI เรียกใช้ได้)
+	public static Point getKingSquare(ChessPiece[][] board, ChessPiece.Color color) {
+    	return findKing(board, color);
+	}	
+
+	// ถ้าฝั่งที่ระบุ 'ถูก Rook/Check' ให้คืนตำแหน่งราชา; ถ้าไม่ถูก ให้คืน null
+	public static Point getCheckSquare(ChessPiece[][] board, ChessPiece.Color color) {
+    	if (!isInCheck(board, color)) return null;
+    	return findKing(board, color);
 	}
 
 	// Return true if `color`'s king is under attack on given board

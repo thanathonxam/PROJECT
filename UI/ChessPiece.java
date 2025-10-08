@@ -1,6 +1,7 @@
 package UI;
+import java.io.*;
 
-public class ChessPiece {
+public class ChessPiece implements Serializable {
     public enum Color { BLACK, WHITE }
     public enum Type { KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN }
 

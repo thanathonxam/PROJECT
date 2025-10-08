@@ -2,17 +2,10 @@ package Start;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
-import File.SaveBoard;
 import setBackgroud.*;
 import Menu.*;
-import UI.ChessBoard;
 
 public class Start extends JFrame {
-    ChessBoard ChessBoard;
-     GameClock GameClock;
-
-    
     public Start() {
         setTitle("CHESS GAME");
         setSize(1920, 1080);
@@ -55,17 +48,26 @@ public class Start extends JFrame {
             }
         });
 
-        // ปุ่ม Settings
-        JButton settingsButton = new JButton("Continue");
-        settingsButton.setFont(new Font("Arial", Font.BOLD, 30));
-        settingsButton.setBackground(new Color(30, 144, 255)); // สีน้ำเงิน
-        settingsButton.setForeground(Color.WHITE);
-        settingsButton.setPreferredSize(new Dimension(250, 60));
-        settingsButton.setBorder(BorderFactory.createRaisedBevelBorder());
-        settingsButton.addActionListener(new ActionListener() {
+        // ปุ่ม Continue
+        JButton ContinueButton = new JButton("Continue");
+        ContinueButton.setFont(new Font("Arial", Font.BOLD, 30));
+        ContinueButton.setBackground(new Color(30, 144, 255)); // สีน้ำเงิน
+        ContinueButton.setForeground(Color.WHITE);
+        ContinueButton.setPreferredSize(new Dimension(250, 60));
+        ContinueButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        ContinueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "You haven't played yet!");
+                java.io.File saveFile = new java.io.File("Savefile/filegame.dat");
+                if (saveFile.exists()) {
+                    setVisible(false);
+                    GameWindow gw = new GameWindow();
+                    if (gw instanceof GameWindow) {
+                        gw.loadSavedGame(saveFile);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No saved game found!");
+                }
             }
         });
 
@@ -85,25 +87,11 @@ public class Start extends JFrame {
 
         // เพิ่มปุ่มทั้งหมดลงใน JPanel สำหรับปุ่ม
         buttonPanel.add(playButton);
-        buttonPanel.add(settingsButton);
+        buttonPanel.add(ContinueButton);
         buttonPanel.add(exitButton);
 
         // เพิ่ม buttonPanel ลงใน backgroundPanel
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
         setVisible(true);
-
-        settingsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            boolean success = SaveBoard.load(ChessBoard, GameClock, "File/savegame.dat");
-            if(success) {
-                 JOptionPane.showMessageDialog(null, "Game loaded!");
-                ChessBoard.refreshBoard(); // อัพเดท UI
-                    } else {
-                            JOptionPane.showMessageDialog(null, "Failed to load.", "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-
-            }
-        });
     }
 }

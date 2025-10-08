@@ -5,13 +5,10 @@ import java.util.Objects;
 import java.util.List;
 import Logic.*;
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-
+import javax.swing.text.*;
 import End.*;
 import Menu.*;
+import java.io.*;
 
 public class ChessBoard extends JPanel{
     private final JButton[][] squares = new JButton[8][8];
@@ -24,15 +21,6 @@ public class ChessBoard extends JPanel{
 
     // ดูว่าเป็นเทิร์นของใคร
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
-
-    // getter / setter สำหรับ SaveManager
-    public ChessPiece[][] getBoard() { return board; }
-    public void setBoard(ChessPiece[][] b) { 
-    for(int r=0;r<8;r++) System.arraycopy(b[r],0,board[r],0,8);
-    }
-    public ChessPiece.Color getCurrentTurn() { return currentTurn; }
-    public void setCurrentTurn(ChessPiece.Color turn) { currentTurn = turn; }
-
 
     private static final Color BOARD_DARK  = new Color(36, 40, 48);  //#242830
     private static final Color BOARD_LIGHT = new Color(66, 74, 86);  //#424A56
@@ -54,10 +42,6 @@ public class ChessBoard extends JPanel{
         // สร้าง GameClock (600 วินาที = 10 นาที)
         this.gameClock = new GameClock(600, timer1Label, timer2Label);
         this.gameClock.startClock();
-
-        // อัพเดทสไตล์ป้ายชื่อผู้เล่น
-        updatePlayerLabelStyles();
-
         setLayout(new GridLayout(8, 8));
         Font pieceFont = new Font("chess", Font.PLAIN, 100);
 
@@ -116,9 +100,9 @@ public class ChessBoard extends JPanel{
     board[7][7] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
 }
 
-    public void refreshBoard() {
+    private void refreshBoard() {
         List<Point> legalMoves = (selected != null) ? Move.getLegalMoves(board, selected.x, selected.y) : null;
-        
+        Point inCheck = Move.getCheckSquare(board, currentTurn);
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 JButton btn = squares[r][c];
@@ -149,6 +133,10 @@ public class ChessBoard extends JPanel{
                     // legal capture target
                     bg = ACCENT_SOFT;
                 }
+                if (inCheck != null && r == inCheck.x && c == inCheck.y) {
+                    bg = new Color(200, 0, 0); // ไฮไลท์แดงเมื่อราชาถูกรุก
+                }
+
                 btn.setBackground(bg);
                 // don't override a legal-move dot's color
                 if (!(isLegal && piece == null)) {
@@ -202,11 +190,9 @@ public class ChessBoard extends JPanel{
             Color pieceColor = (mover.getColor() == ChessPiece.Color.WHITE) ? Color.WHITE : Color.BLACK;
             appendStyled(logArea, glyph + " ", pieceColor, true);
         }
-        appendStyled(logArea, toSquare(rFrom, cFrom) + "→" + toSquare(rTo, cTo) + "\n", base, false);
+        String mid = isCapture ? "x" : "→";  // ถ้ากิน = x, ถ้าไม่กิน = →
+        appendStyled(logArea, toSquare(rFrom, cFrom) +  mid  + toSquare(rTo, cTo) + "\n", base, false);
     }
-
-
-
 
     // อัปเดตสไตล์ของป้ายชื่อผู้เล่น
     public void updatePlayerLabelStyles() {
@@ -313,22 +299,22 @@ public void restartGame() {
                 switch (state) {
 			case CHECKMATE: {
                 gameClock.stopClock(); // หยุดนาฬิกาเมื่อเกมจบ
+                gameOver = true; // กันไม่ให้กดต่อ
+                java.awt.Window win = SwingUtilities.getWindowAncestor(this);
+                if (win != null) win.dispose(); // ปิดหน้าต่างเกมเดิม (GameWindow)
                 new EndGameWindow();
 				break;
 			}
 			case STALEMATE: {
+                gameOver = true;
+                java.awt.Window win = SwingUtilities.getWindowAncestor(this);
+                if (win != null) win.dispose();
                 gameClock.stopClock();
-				new EndGameWindow();
+				new DrawGameWindow();
 				break;
 			}
 			case CHECK: {
-				String checkedSide = (currentTurn == ChessPiece.Color.WHITE) ? "WHITE" : "BLACK";
-				JOptionPane.showMessageDialog(
-					null,
-					checkedSide + " is in CHECK! Please protect the king!",
-					"Warning - CHECK",
-					JOptionPane.WARNING_MESSAGE
-				);
+				// ราชาถูกเช็ค (ไฮไลท์ใน refreshBoard()
 				break;
 			}
 			case NORMAL:
@@ -340,4 +326,52 @@ public void restartGame() {
         }
     refreshBoard(); // อัพเดท UI ทุกครั้ง
     }
+
+    public void saveGame(File file) {
+    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+        out.writeObject(board); // board must be Serializable
+        out.writeObject(gameClock.getTimes()); // Save both timers (implement getTimes() in GameClock)
+        out.writeObject(currentTurn);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+public void loadGame(File file) {
+    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+        ChessPiece[][] loadedBoard = (ChessPiece[][]) in.readObject();
+        int[] times = (int[]) in.readObject();
+        ChessPiece.Color loadedTurn = (ChessPiece.Color) in.readObject();
+        System.arraycopy(loadedBoard, 0, board, 0, board.length);
+        gameClock.setTimes(times); // implement setTimes(int[]) in GameClock
+        currentTurn = loadedTurn;
+        refreshBoard();
+        updatePlayerLabelStyles();
+    } catch (IOException | ClassNotFoundException e) {
+        e.printStackTrace();
+    }
+}
+
+// Enable or disable the board for moves
+public void setBoardEnabled(boolean enabled) {
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            squares[r][c].setEnabled(enabled);
+        }
+    }
+}
+
+// Pause the game clock
+public void pauseClock() {
+    if (gameClock != null) {
+        gameClock.pause();
+    }
+}
+
+// Resume the game clock
+public void resumeClock() {
+    if (gameClock != null) {
+        gameClock.resume();
+    }
+}
 }
