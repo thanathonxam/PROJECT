@@ -16,6 +16,7 @@ public class GameWindow extends JFrame {
 		setSize(1920, 1080);
 		setLocationRelativeTo(null);
 		setResizable(false);
+		setUndecorated(true);
 		setLayout(new BorderLayout());
 
 		//สร้าง icon เเละแสดงผล
@@ -235,4 +236,5 @@ public class GameWindow extends JFrame {
 	        chessBoard.loadGame(file);
 	    }
 	}
+
 }
