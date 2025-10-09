@@ -22,23 +22,16 @@ public class Start extends JFrame {
         BackgroundPanel backgroundPanel = new BackgroundPanel("Image/chess.png");
         setContentPane(backgroundPanel);
 
-        // Label หัวเรื่อง
-        JLabel title = new JLabel("CHESS GAME DEMO", SwingConstants.CENTER);
-        title.setFont(new Font("Serif", Font.BOLD, 100)); // เปลี่ยนฟอนต์ให้ดูดีขึ้น
-        title.setForeground(Color.WHITE); 
-        backgroundPanel.add(title, BorderLayout.NORTH);
-
         // สร้าง JPanel สำหรับปุ่มทั้งหมด
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false); // ทำให้ JPanel นี้โปร่งใส
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // จัดปุ่มให้อยู่กึ่งกลางและมีช่องว่าง
+        buttonPanel.setLayout(null);
 
         // ปุ่ม Play
         JButton playButton = new JButton("Play");
         playButton.setFont(new Font("Arial", Font.BOLD, 30)); // ฟอนต์ที่ใหญ่ขึ้นและตัวหนา
         playButton.setBackground(new Color(60, 179, 113)); // สีเขียวมรกต
         playButton.setForeground(Color.WHITE); // สีตัวอักษรสีขาว
-        playButton.setPreferredSize(new Dimension(250, 60)); // กำหนดขนาดปุ่ม
         playButton.setBorder(BorderFactory.createRaisedBevelBorder()); // ขอบนูน
         playButton.addActionListener(new ActionListener() {
             @Override
@@ -53,7 +46,6 @@ public class Start extends JFrame {
         ContinueButton.setFont(new Font("Arial", Font.BOLD, 30));
         ContinueButton.setBackground(new Color(30, 144, 255)); // สีน้ำเงิน
         ContinueButton.setForeground(Color.WHITE);
-        ContinueButton.setPreferredSize(new Dimension(250, 60));
         ContinueButton.setBorder(BorderFactory.createRaisedBevelBorder());
         ContinueButton.addActionListener(new ActionListener() {
             @Override
@@ -76,7 +68,6 @@ public class Start extends JFrame {
         exitButton.setFont(new Font("Arial", Font.BOLD, 30));
         exitButton.setBackground(new Color(255, 69, 0)); // สีส้ม
         exitButton.setForeground(Color.WHITE);
-        exitButton.setPreferredSize(new Dimension(250, 60));
         exitButton.setBorder(BorderFactory.createRaisedBevelBorder());
         exitButton.addActionListener(new ActionListener() {
             @Override
@@ -84,6 +75,10 @@ public class Start extends JFrame {
                 System.exit(0);
             }
         });
+        // วางตำแหน่งปุ่มแบบพิกัด (x, y, width, height)
+        playButton.setBounds(520, 795, 250, 70);
+        ContinueButton.setBounds(830, 795, 250, 70);
+        exitButton.setBounds(1135, 795, 250, 70);
 
         // เพิ่มปุ่มทั้งหมดลงใน JPanel สำหรับปุ่ม
         buttonPanel.add(playButton);
@@ -91,7 +86,7 @@ public class Start extends JFrame {
         buttonPanel.add(exitButton);
 
         // เพิ่ม buttonPanel ลงใน backgroundPanel
-        backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
+        backgroundPanel.add(buttonPanel, BorderLayout.CENTER);
         setVisible(true);
     }
 }
