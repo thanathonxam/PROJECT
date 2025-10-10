@@ -39,7 +39,7 @@ public class ChessBoard extends JPanel{
         this.logArea = logArea;
        
         // สร้าง GameClock (600 วินาที = 10 นาที)
-        this.gameClock = new GameClock(600, timer1Label, timer2Label);
+        this.gameClock = new GameClock(5, timer1Label, timer2Label);
         this.gameClock.startClock();
         setLayout(new GridLayout(8, 8));
         Font pieceFont = new Font("chess", Font.PLAIN, 100);

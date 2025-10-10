@@ -1,6 +1,8 @@
 package Menu;
+import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.*;
+import Start.Start;
 import UI.*;
 
 public class GameClock {
@@ -9,6 +11,7 @@ public class GameClock {
     private JLabel whiteLabel;
     private JLabel blackLabel;
     private Timer clockTimer;
+    private boolean gameEnded = false;
     private ChessPiece.Color currentTurn;
 
     public GameClock(int startSeconds, JLabel whiteLabel, JLabel blackLabel) {
@@ -25,31 +28,48 @@ public class GameClock {
     }
     // เริ่มจับเวลา
     public void startClock() {
-        if (clockTimer != null) clockTimer.stop(); //หยุด timer เก่าถ้ามีอยู่แล้ว เพื่อป้องกันการมีหลายตัวนับซ้อนกัน
+    if (clockTimer != null) clockTimer.stop();
 
     clockTimer = new Timer(1000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+            if (gameEnded) return; // กันยิงซ้ำ
+
             if (currentTurn == ChessPiece.Color.WHITE) {
                 timeWhite--;
                 whiteLabel.setText(formatTime(timeWhite));
                 if (timeWhite <= 0) {
-                    JOptionPane.showMessageDialog(null, "White time out! Black wins!");
-                    System.exit(0);
+                    timeoutGoToStart("White time out! Black wins!");
                 }
             } else {
                 timeBlack--;
                 blackLabel.setText(formatTime(timeBlack));
                 if (timeBlack <= 0) {
-                    JOptionPane.showMessageDialog(null, "Black time out! White wins!");
-                    System.exit(0);
+                    timeoutGoToStart("Black time out! White wins!");
                 }
             }
         }
     });
         clockTimer.start();
     }
+    private void timeoutGoToStart(String msg) {
+        gameEnded = true;           // กันไม่ให้ actionPerformed ทำงานต่อ
+            if (clockTimer != null) {
+                clockTimer.stop();
+            }
+    JOptionPane.showMessageDialog(null, msg);
 
+    // ปิดหน้าต่างเกม (หา window จาก label ไหนก็ได้ที่อยู่ใน GameWindow)
+    Window w = SwingUtilities.getWindowAncestor(
+        (currentTurn == ChessPiece.Color.WHITE) ? whiteLabel : blackLabel
+    );
+    if (w != null) w.dispose();
+
+    // เปิดหน้า Start บน EDT
+        SwingUtilities.invokeLater(() -> {
+        new Start().setVisible(true);   // ถ้าไม่มี Start.open() ใช้ new Start().setVisible(true);
+    });
+}
     // แปลงวินาทีเป็น MM:SS
     private String formatTime(int seconds) {
         int min = seconds / 60;
