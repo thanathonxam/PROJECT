@@ -2,8 +2,6 @@ package End;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-
 import Start.Start;
 import setBackgroud.*;
 
@@ -57,14 +55,11 @@ public class EndGameWindow extends JFrame {
         exitButton.setBorder(BorderFactory.createRaisedBevelBorder());
         exitButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                File fileToDelete = new File("Savefile/filegame.dat");
-                if (fileToDelete.exists()) {
-                    fileToDelete.delete(); // ลบไฟล์ถ้ามีอยู่
-                }
+            public void actionPerformed(ActionEvent evt) {
                 System.exit(0);
             }
         });
+        
         buttonPanel.add(backButton);
         buttonPanel.add(exitButton);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);

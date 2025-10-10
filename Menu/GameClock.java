@@ -16,7 +16,7 @@ public class GameClock {
         this.timeBlack = startSeconds;
         this.whiteLabel = whiteLabel;
         this.blackLabel = blackLabel;
-        this.currentTurn = ChessPiece.Color.BLACK; // เริ่มให้ขาวเดินก่อน
+        this.currentTurn = ChessPiece.Color.WHITE; // เริ่มให้ขาวเดินก่อน
     }
 
     // เปลี่ยนฝั่งที่จะนับเวลา

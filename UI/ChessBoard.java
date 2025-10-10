@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.text.*;
 import End.*;
 import Menu.*;
-import java.io.*;
 
 public class ChessBoard extends JPanel{
     private final JButton[][] squares = new JButton[8][8];
@@ -326,31 +325,6 @@ public void restartGame() {
         }
     refreshBoard(); // อัพเดท UI ทุกครั้ง
     }
-
-    public void saveGame(File file) {
-    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-        out.writeObject(board); // board must be Serializable
-        out.writeObject(gameClock.getTimes()); // Save both timers (implement getTimes() in GameClock)
-        out.writeObject(currentTurn);
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-public void loadGame(File file) {
-    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-        ChessPiece[][] loadedBoard = (ChessPiece[][]) in.readObject();
-        int[] times = (int[]) in.readObject();
-        ChessPiece.Color loadedTurn = (ChessPiece.Color) in.readObject();
-        System.arraycopy(loadedBoard, 0, board, 0, board.length);
-        gameClock.setTimes(times); // implement setTimes(int[]) in GameClock
-        currentTurn = loadedTurn;
-        refreshBoard();
-        updatePlayerLabelStyles();
-    } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
-    }
-}
 
 // Enable or disable the board for moves
 public void setBoardEnabled(boolean enabled) {

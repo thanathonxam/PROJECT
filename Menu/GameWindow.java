@@ -5,7 +5,6 @@ import java.awt.*;
 import UI.*;
 import setBackgroud.*;
 import java.awt.event.*;
-import java.io.*;
 
 public class GameWindow extends JFrame {
 	private ChessBoard chessBoard;
@@ -105,7 +104,6 @@ public class GameWindow extends JFrame {
 				exitBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						chessBoard.saveGame(new File("Savefile/filegame.dat"));
 						pauseDialog.dispose();	
 						GameWindow.this.requestFocusInWindow();	
 						System.exit(0);
@@ -152,7 +150,7 @@ public class GameWindow extends JFrame {
 		timer2Label.setForeground(text);
 		player1Active.setForeground(new Color(0, 220, 80)); // เขียว
 		player2Active.setForeground(new Color(0, 220, 80));
-		player1Active.setVisible(false);
+		player1Active.setVisible(true);
 		player2Active.setVisible(false);
 
 		// --- Game Log ---
@@ -226,16 +224,9 @@ public class GameWindow extends JFrame {
 				messageArea
 		);
 		add(chessBoard, BorderLayout.CENTER);
-
+		chessBoard.updatePlayerLabelStyles();
 		setVisible(true);
 
         }
-	
-	public void loadSavedGame(java.io.File file) {
-	    if (chessBoard != null) {
-	        chessBoard.loadGame(file);
-	    }
-	}
-
 }
 

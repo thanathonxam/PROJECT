@@ -47,21 +47,6 @@ public class Start extends JFrame {
         ContinueButton.setBackground(new Color(30, 144, 255)); // สีน้ำเงิน
         ContinueButton.setForeground(Color.WHITE);
         ContinueButton.setBorder(BorderFactory.createRaisedBevelBorder());
-        ContinueButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                java.io.File saveFile = new java.io.File("Savefile/filegame.dat");
-                if (saveFile.exists()) {
-                    setVisible(false);
-                    GameWindow gw = new GameWindow();
-                    if (gw instanceof GameWindow) {
-                        gw.loadSavedGame(saveFile);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "No saved game found!");
-                }
-            }
-        });
 
         // ปุ่ม Exit
         JButton exitButton = new JButton("Exit");

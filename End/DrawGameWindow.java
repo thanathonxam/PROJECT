@@ -1,11 +1,9 @@
 package End;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-
 import Start.Start;
+import java.awt.*;
 import setBackgroud.*;
+import java.awt.event.*;
 
 public class DrawGameWindow extends JFrame {
     /**
@@ -42,15 +40,12 @@ public class DrawGameWindow extends JFrame {
         backButton.setBorder(BorderFactory.createRaisedBevelBorder()); // ขอบนูน
         backButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                File fileToDelete = new File("Savefile/filegame.dat");
-                if (fileToDelete.exists()) {
-                    fileToDelete.delete(); // ลบไฟล์ถ้ามีอยู่
-                }
-                setVisible(false);
-                new Start();
-            }
-        });
+            public void actionPerformed(ActionEvent evt) {
+                Window w = SwingUtilities.getWindowAncestor(backButton);
+                    if (w != null) w.dispose();
+                        new Start();; // กลับหน้า Start
+                    }
+                });
 
         // 2. ปุ่ม Exit (ออกจากโปรแกรม)
         JButton exitButton = new JButton("Exit");
@@ -58,13 +53,13 @@ public class DrawGameWindow extends JFrame {
         exitButton.setBackground(new Color(255, 69, 0)); 
         exitButton.setForeground(Color.WHITE);
         exitButton.setPreferredSize(new Dimension(250, 60)); // กำหนดขนาดปุ่ม
-        exitButton.setBorder(BorderFactory.createRaisedBevelBorder());
         exitButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent evt) {
                 System.exit(0);
             }
         });
+
         buttonPanel.add(backButton);
         buttonPanel.add(exitButton);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
