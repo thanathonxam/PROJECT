@@ -37,7 +37,7 @@ public class Start extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                new GameWindow();
+                new GameWindow(false); // เริ่มเกมใหม่เสมอ
             }
         });
 
@@ -47,6 +47,19 @@ public class Start extends JFrame {
         ContinueButton.setBackground(new Color(30, 144, 255)); // สีน้ำเงิน
         ContinueButton.setForeground(Color.WHITE);
         ContinueButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        ContinueButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                java.io.File save = new java.io.File("Save/board.csv");
+                if (!save.exists()) {
+                    JOptionPane.showMessageDialog(null, "No saved game found!");
+                    new GameWindow(false);
+                } else {
+                    new GameWindow(true);
+                 }
+                dispose();
+        }
+        });
 
         // ปุ่ม Exit
         JButton exitButton = new JButton("Exit");

@@ -14,12 +14,14 @@ public class ChessBoard extends JPanel{
     private final ChessPiece[][] board = new ChessPiece[8][8];
     private Point selected = null;
     private boolean gameOver = false;
+    private GameClock gameClock; // อ้างถึงนาฬิกาเกม
 
-    // ใช้ GameClock แทนตัวแปรเวลาเดิม
-    private GameClock gameClock;
+
+    public void setGameClock(GameClock clock) { this.gameClock = clock; }
+    public GameClock getGameClock() { return this.gameClock; }
 
     // ดูว่าเป็นเทิร์นของใคร
-    private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
+    //private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
 
     private static final Color BOARD_DARK  = new Color(36, 40, 48);  //#242830
     private static final Color BOARD_LIGHT = new Color(66, 74, 86);  //#424A56
@@ -39,7 +41,7 @@ public class ChessBoard extends JPanel{
         this.logArea = logArea;
        
         // สร้าง GameClock (600 วินาที = 10 นาที)
-        this.gameClock = new GameClock(5, timer1Label, timer2Label);
+        this.gameClock = new GameClock(600, timer1Label, timer2Label);
         this.gameClock.startClock();
         setLayout(new GridLayout(8, 8));
         Font pieceFont = new Font("chess", Font.PLAIN, 100);
@@ -348,4 +350,54 @@ public void resumeClock() {
         gameClock.resume();
     }
 }
+        
+    // เข้าถึงสถานะกระดานและหมาก
+    public ChessPiece getPieceAt(int r, int c) { return board[r][c]; }
+    public void setPieceAt(int r, int c, ChessPiece p) { board[r][c] = p; }
+
+    // ใครเดิน (ถ้ามีฟิลด์อยู่แล้ว เช่น currentTurn ให้ผูกกับของเดิม)
+    private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
+    public ChessPiece.Color getCurrentTurn() { return currentTurn; }
+    public void setCurrentTurn(ChessPiece.Color turn) { currentTurn = turn; }
+
+    // แปลง ChessPiece -> โทเคนสั้น ๆ (wP/bK/.)
+    private String encode(ChessPiece p) {
+        if (p == null) return ".";
+            char side = (p.getColor() == ChessPiece.Color.WHITE) ? 'w' : 'b';
+            char t;
+        switch (p.getType()) {
+            case KING: t='K'; break; case QUEEN: t='Q'; break; case ROOK: t='R'; break;
+            case BISHOP: t='B'; break; case KNIGHT: t='N'; break; case PAWN: t='P'; break;
+        default: t='?';
+        }
+        return "" + side + t;
+    }
+
+    private ChessPiece decode(String token) {
+        if (token == null || token.equals(".") || token.isEmpty()) return null;
+            ChessPiece.Color color = (token.charAt(0)=='w') ? ChessPiece.Color.WHITE : ChessPiece.Color.BLACK;
+            ChessPiece.Type type;
+        switch (token.charAt(1)) {
+            case 'K': type = ChessPiece.Type.KING; break;
+            case 'Q': type = ChessPiece.Type.QUEEN; break;
+            case 'R': type = ChessPiece.Type.ROOK; break;
+            case 'B': type = ChessPiece.Type.BISHOP; break;
+            case 'N': type = ChessPiece.Type.KNIGHT; break;
+            case 'P': type = ChessPiece.Type.PAWN; break;
+            default: return null;
+        }
+    return new ChessPiece(color, type);
+    }
+    public String encodeAt(int r, int c) { 
+        return encode(board[r][c]); 
+    }
+    public void decodeToCell(int r, int c, String token) {
+        board[r][c] = decode(token);
+    }
+    public void forceRefresh() {
+        selected = null;     // กันกรณีมีช่องถูกเลือกค้าง
+        refreshBoard();      // อัปเดตข้อความ/สีทุกปุ่มจาก board[][]
+        revalidate();
+        repaint();
+    }
 }

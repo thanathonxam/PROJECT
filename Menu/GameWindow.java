@@ -1,6 +1,7 @@
 package Menu;
 import javax.swing.*;
 import End.*;
+import Start.Start;
 import java.awt.*;
 import UI.*;
 import setBackgroud.*;
@@ -8,7 +9,115 @@ import java.awt.event.*;
 
 public class GameWindow extends JFrame {
 	private ChessBoard chessBoard;
-	
+	private java.io.File saveFile = new java.io.File("Save/board.csv");
+	private void ensureSaveDir() {
+    if (saveFile.getParentFile() != null && !saveFile.getParentFile().exists()) {
+        saveFile.getParentFile().mkdirs();
+    	}
+	}
+
+	private void saveGameToCSV() {
+    	try {
+        	ensureSaveDir();
+        	try (java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.OutputStreamWriter(
+                new java.io.FileOutputStream(saveFile), java.nio.charset.StandardCharsets.UTF_8))) {
+
+            // 8 แถวของกระดาน
+            for (int r = 0; r < 8; r++) {
+                StringBuilder sb = new StringBuilder();
+                for (int c = 0; c < 8; c++) {
+                    sb.append(chessBoard.encodeAt(r, c));
+                    if (c<7) sb.append(',');
+                }
+                pw.println(sb.toString());
+            }
+
+            // TURN
+            ChessPiece.Color turn = chessBoard.getCurrentTurn();
+            String turnStr;
+			if (turn == ChessPiece.Color.WHITE) {
+    			turnStr = "WHITE";
+			} else {
+    			turnStr = "BLACK";
+			}
+			pw.println("TURN," + turnStr);
+
+            // TIME
+            int w = 600, b = 600; // default กันพัง
+            if (chessBoard.getGameClock() != null) {
+                int[] t = chessBoard.getGameClock().getTimes();
+                w = t[0]; b = t[1];
+            }
+            pw.println("TIME," + w + "," + b);
+        	}
+    	} catch (Exception ex) {
+        	ex.printStackTrace();
+        	JOptionPane.showMessageDialog(this, "Save failed: " + ex.getMessage());
+    	}
+	}
+
+	private boolean loadGameFromCSV() {
+    if (saveFile == null || !saveFile.exists()) return false;
+    try (java.io.BufferedReader br = new java.io.BufferedReader(
+			new java.io.InputStreamReader(new java.io.FileInputStream(saveFile), java.nio.charset.StandardCharsets.UTF_8))) {
+
+        String[][] cells = new String[8][8];
+        for (int r=0; r<8; r++) {
+            String line = br.readLine();
+            if (line == null) return false;
+            String[] toks = line.split(",", -1);
+            if (toks.length != 8) return false;
+            cells[r] = toks;
+        }
+
+        String turnLine = br.readLine();     // "TURN,WHITE"
+        String timeLine = br.readLine();     // "TIME,600,600"
+        if (turnLine == null || timeLine == null) return false;
+
+        // เติมหมากลงกระดาน
+        for (int r=0; r<8; r++) {
+            for (int c=0; c<8; c++) {
+                chessBoard.decodeToCell(r, c, cells[r][c]);
+            }
+        }
+
+        // TURN
+        String[] tt = turnLine.split(",", -1);
+        if (tt.length>=2) {
+            ChessPiece.Color turn;
+    		if ("WHITE".equalsIgnoreCase(tt[1])) {
+        		turn = ChessPiece.Color.WHITE;
+    		} else {
+        		turn = ChessPiece.Color.BLACK;
+    		}
+    		chessBoard.setCurrentTurn(turn);
+        }
+		// ให้ GameClock รู้ตาเดินปัจจุบันด้วย
+		if (chessBoard.getGameClock() != null) {
+    		chessBoard.getGameClock().setCurrentTurn(chessBoard.getCurrentTurn());
+		}
+
+		// อัปเดตป้าย ACTIVE ให้ตรงกับ currentTurn
+		chessBoard.updatePlayerLabelStyles();
+
+        // TIME
+        String[] tm = timeLine.split(",", -1);
+        if (tm.length>=3 && chessBoard.getGameClock()!=null) {
+            int w = Integer.parseInt(tm[1].trim());
+            int b = Integer.parseInt(tm[2].trim());
+            chessBoard.getGameClock().setTimes(new int[]{w,b});
+        }
+
+        chessBoard.forceRefresh();  // << เรียกตัวใหม่ที่เราเพิ่งเพิ่ม
+        return true;
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Load failed: " + ex.getMessage());
+        return false;
+    }
+}
+
 	public GameWindow() {
 		setTitle("CHESS GAME");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,7 +188,7 @@ public class GameWindow extends JFrame {
 				exitBtn.setBackground(new Color(255, 69, 0));
 				exitBtn.setPreferredSize(new Dimension(250, 60));	
 				exitBtn.setBorder(BorderFactory.createRaisedBevelBorder());	
-				exitBtn.setForeground(Color.WHITE);				
+				exitBtn.setForeground(Color.WHITE);	
 
 				resumeBtn.addActionListener(new ActionListener() {
 					@Override
@@ -104,9 +213,10 @@ public class GameWindow extends JFrame {
 				exitBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						pauseDialog.dispose();	
-						GameWindow.this.requestFocusInWindow();	
-						System.exit(0);
+       					saveGameToCSV();
+        				pauseDialog.dispose();
+        				GameWindow.this.dispose();
+				        new Start(); // กลับไปหน้า Start
 					}
 				});
 				pauseDialog.add(resumeBtn);
@@ -224,9 +334,30 @@ public class GameWindow extends JFrame {
 				messageArea
 		);
 		add(chessBoard, BorderLayout.CENTER);
+		chessBoard.setFocusable(true);
+		chessBoard.requestFocusInWindow();
+		chessBoard.revalidate(); 
+		chessBoard.repaint();
 		chessBoard.updatePlayerLabelStyles();
 		setVisible(true);
-
         }
+
+	public GameWindow(boolean resume) {
+    	this(); // สร้าง UI จากคอนสตรักเตอร์เดิม
+
+    // โหลดไฟล์ถ้ากด Continue; แจ้งเตือนถ้าโหลดไม่ได้
+    	if (resume && !loadGameFromCSV()) {
+        	JOptionPane.showMessageDialog(this, "NO SAVED GAME FOUND!");
+    	}
+
+    // ดันงาน UI หลังหน้าต่างพร้อมจริง
+    javax.swing.SwingUtilities.invokeLater(() -> {
+        if (chessBoard != null) chessBoard.requestFocusInWindow();
+        GameWindow.this.toFront();
+        GameWindow.this.requestFocusInWindow();
+    });
 }
+}
+
+
 

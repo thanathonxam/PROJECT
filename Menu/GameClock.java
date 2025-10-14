@@ -14,6 +14,9 @@ public class GameClock {
     private boolean gameEnded = false;
     private ChessPiece.Color currentTurn;
 
+    public ChessPiece.Color getCurrentTurn() { return currentTurn; }
+    public void setCurrentTurn(ChessPiece.Color turn) { this.currentTurn = turn; }
+
     public GameClock(int startSeconds, JLabel whiteLabel, JLabel blackLabel) {
         this.timeWhite = startSeconds;
         this.timeBlack = startSeconds;
@@ -90,19 +93,21 @@ public class GameClock {
     if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
     }
 
-    public int[] getTimes() {
-        return new int[] { timeWhite, timeBlack };
-    }
-
     public void setTimes(int[] times) {
         timeWhite = times[0];
         timeBlack = times[1];
         if (whiteLabel != null) whiteLabel.setText(formatTime(timeWhite));
         if (blackLabel != null) blackLabel.setText(formatTime(timeBlack));
     }
+
+    public int[] getTimes() {
+    return new int[]{ timeWhite, timeBlack };
+    }
+
     public void pause() {
         clockTimer.stop();
     }
+    
     public void resume() {
         clockTimer.start();
     }
