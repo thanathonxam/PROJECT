@@ -21,8 +21,8 @@ public class ChessBoard extends JPanel{
 
     private static final Color BOARD_DARK  = new Color(36, 40, 48);  //#242830
     private static final Color BOARD_LIGHT = new Color(66, 74, 86);  //#424A56
-    private static final Color ACCENT      = new Color(0, 189, 166); // teal
-    private static final Color ACCENT_SOFT = new Color(0, 189, 166, 60); // teal โปร่ง
+	private static final Color ACCENT      = new Color(0, 189, 166); // teal
+    private static final Color ACCENT_SOFT = new Color(200, 50, 20);; // teal โปร่ง
     
     // Player UI
     private JLabel player1Active;
@@ -426,3 +426,4 @@ public class ChessBoard extends JPanel{
         repaint();
     }
 }
+
