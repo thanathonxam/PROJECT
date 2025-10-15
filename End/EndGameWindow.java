@@ -11,9 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class EndGameWindow extends JFrame {
-    /**
-     * คอนสตรักเตอร์สำหรับสร้างหน้าต่าง End Game
-     */
+    // === Constructor: basic UI ===
     public EndGameWindow() {
         setTitle("Game Over");
         setSize(1920, 1080);
@@ -26,7 +24,7 @@ public class EndGameWindow extends JFrame {
         setContentPane(backgroundPanel);
 
         // --- ส่วนหัว (ข้อความ END GAME) ---
-    JLabel titleLabel = new JLabel("END GAME", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("END GAME", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 60)); // ฟอนต์ขนาดใหญ่
         titleLabel.setForeground(new Color(192, 57, 43)); // สีแดงเข้ม (Pomegranate)
         backgroundPanel.add(titleLabel, BorderLayout.CENTER);
@@ -71,22 +69,23 @@ public class EndGameWindow extends JFrame {
         deleteSaveIfExists(); // ลบไฟล์เซฟถ้ามี
         setVisible(true);
     }
-     // === Overloaded constructor: show who wins ===
+
+    // === Constructor: with winner and reason ===
     public EndGameWindow(ChessPiece.Color winner, String reason) {
         // สร้าง UI พื้นฐานเหมือน constructor เดิม
         this();
-
+        
         // สร้างข้อความผู้ชนะ (ภาษาอังกฤษ)
         String winnerText;
             if (winner == null) { winnerText = "DRAW"; } 
             else if (winner == ChessPiece.Color.WHITE) { winnerText = "WHITE WINS"; } 
             else { winnerText = "BLACK WINS"; }
-
-        // ป้ายบอกผลผู้ชนะวางด้านบน (NORTH) ของพื้นหลัง
+        
+            // ป้ายบอกผลผู้ชนะวางด้านบน (NORTH) ของพื้นหลัง
         JLabel winnerLabel = new JLabel(winnerText, SwingConstants.CENTER);
         winnerLabel.setFont(new Font("Arial", Font.BOLD, 36));
         winnerLabel.setForeground(Color.WHITE);
-
+        
         // (option) ใส่เหตุผลเล็ก ๆ ใต้ผู้ชนะ
         String reasonText;
         if (reason == null || reason.isEmpty()) { reasonText = ""; } 
@@ -94,7 +93,7 @@ public class EndGameWindow extends JFrame {
         JLabel reasonLabel = new JLabel(reasonText, SwingConstants.CENTER);
         reasonLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         reasonLabel.setForeground(Color.LIGHT_GRAY);
-
+        
         // เอา label สองตัวนี้วางซ้อนใน panel เดียวแล้ว add ไปที่ NORTH
         JPanel north = new JPanel();
         north.setOpaque(false);
@@ -105,8 +104,9 @@ public class EndGameWindow extends JFrame {
         getContentPane().add(north, BorderLayout.NORTH);
         revalidate();
         repaint();
-    }
+        }
 
+    // ลบไฟล์เซฟถ้ามี
     private void deleteSaveIfExists() {
     try {
         Path savePath = Paths.get("Save", "board.csv");

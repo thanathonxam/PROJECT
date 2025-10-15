@@ -10,12 +10,14 @@ import java.awt.event.*;
 public class GameWindow extends JFrame {
 	private ChessBoard chessBoard;
 	private java.io.File saveFile = new java.io.File("Save/board.csv");
+	// สร้างโฟลเดอร์ Save ถ้ายังไม่มี
 	private void ensureSaveDir() {
     if (saveFile.getParentFile() != null && !saveFile.getParentFile().exists()) {
         saveFile.getParentFile().mkdirs();
     	}
 	}
 
+	// บันทึกสถานะเกมปัจจุบันลงไฟล์ CSV
 	private void saveGameToCSV() {
     	try {
         	ensureSaveDir();
@@ -35,11 +37,8 @@ public class GameWindow extends JFrame {
             // TURN
             ChessPiece.Color turn = chessBoard.getCurrentTurn();
             String turnStr;
-			if (turn == ChessPiece.Color.WHITE) {
-    			turnStr = "WHITE";
-			} else {
-    			turnStr = "BLACK";
-			}
+			if (turn == ChessPiece.Color.WHITE) { turnStr = "WHITE"; } 
+			else { turnStr = "BLACK"; }
 			pw.println("TURN," + turnStr);
 
             // TIME
@@ -56,11 +55,13 @@ public class GameWindow extends JFrame {
     	}
 	}
 
+	// โหลดสถานะเกมจากไฟล์ CSV
 	private boolean loadGameFromCSV() {
-    if (saveFile == null || !saveFile.exists()) return false;
-    try (java.io.BufferedReader br = new java.io.BufferedReader(
+    	if (saveFile == null || !saveFile.exists()) return false;
+    	try (java.io.BufferedReader br = new java.io.BufferedReader(
 			new java.io.InputStreamReader(new java.io.FileInputStream(saveFile), java.nio.charset.StandardCharsets.UTF_8))) {
 
+		// อ่าน 8 แถวของกระดาน		
         String[][] cells = new String[8][8];
         for (int r=0; r<8; r++) {
             String line = br.readLine();
@@ -85,13 +86,11 @@ public class GameWindow extends JFrame {
         String[] tt = turnLine.split(",", -1);
         if (tt.length>=2) {
             ChessPiece.Color turn;
-    		if ("WHITE".equalsIgnoreCase(tt[1])) {
-        		turn = ChessPiece.Color.WHITE;
-    		} else {
-        		turn = ChessPiece.Color.BLACK;
-    		}
+    		if ("WHITE".equalsIgnoreCase(tt[1])) { turn = ChessPiece.Color.WHITE; } 
+			else { turn = ChessPiece.Color.BLACK; }
     		chessBoard.setCurrentTurn(turn);
         }
+
 		// ให้ GameClock รู้ตาเดินปัจจุบันด้วย
 		if (chessBoard.getGameClock() != null) {
     		chessBoard.getGameClock().setCurrentTurn(chessBoard.getCurrentTurn());
@@ -111,12 +110,12 @@ public class GameWindow extends JFrame {
         chessBoard.forceRefresh();  // << เรียกตัวใหม่ที่เราเพิ่งเพิ่ม
         return true;
 
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Load failed: " + ex.getMessage());
-        return false;
-    }
-}
+    	} catch (Exception ex) {
+        	ex.printStackTrace();
+        	JOptionPane.showMessageDialog(this, "Load failed: " + ex.getMessage());
+        	return false;
+    	}
+	}
 
 	public GameWindow() {
 		setTitle("CHESS GAME");
@@ -139,6 +138,7 @@ public class GameWindow extends JFrame {
 
 		add(sidePanel, BorderLayout.WEST);
 
+		// --- ปุ่ม STOP GAME ---
 		int x = 24;
 		int w = 252;
 		int topY = 24;
@@ -230,7 +230,7 @@ public class GameWindow extends JFrame {
 		sidePanel.add(StopButton); 
 
 
-		// --- Player Labels ---
+		// --- ป้ายแสดงข้อมูลผู้เล่น 2 ฝั่ง ---
 		JLabel player1Name	 = new JLabel("PLAYER 1", SwingConstants.LEFT);
 		JLabel player1Color	= new JLabel("(WHITE)",	 SwingConstants.LEFT);
 		JLabel player1Active = new JLabel("ACTIVE",	 SwingConstants.LEFT);
@@ -243,8 +243,7 @@ public class GameWindow extends JFrame {
 		timer1Label.setOpaque(false);  
 		timer2Label.setOpaque(false);  
 
-
-		// ฟอนต์/สีให้ตัดกับพื้นหลังเข้ม
+		// ฟอนต์/สี
 		Color text = new Color(220,230,240);
 		Color sub	= new Color(170,180,190);
 		player1Name.setFont(new Font("", Font.BOLD, 28));
@@ -281,14 +280,13 @@ public class GameWindow extends JFrame {
 		scrollPane.setBorder(BorderFactory.createTitledBorder("GAME LOG"));
 
 
-		// **โค้ดที่แก้ไข: การคำนวณตำแหน่ง Panel ย่อย (ใช้ stopButtonY ที่ประกาศแล้ว)**
+		// คำนวณขนาด/ตำแหน่งแผงย่อย 3 ตัว (บน กลาง ล่าง)
 		int botH = 210;
 		// ปรับ botY ให้ bottomPanel อยู่เหนือปุ่ม STOP (เว้น gap)
 		int botY = stopButtonY - gap - botH; 			
 		int logY = topY + topH + gap; 			
-		// ปรับ logH ให้สั้นลง
+		// ความสูง logPanel = ระยะห่างระหว่าง topPanel กับ bottomPanel (เว้น gap)
 		int logH = botY - gap - logY;	
-		// **จบโค้ดที่แก้ไข**
 
 		// ====== แผงย่อยโปร่งใส 3 ตัว ======
 		JPanel topPanel = new JPanel(null); 	// null เพื่อใช้ setBounds ของ label ภายใน
@@ -347,19 +345,18 @@ public class GameWindow extends JFrame {
 
 	public GameWindow(boolean resume) {
     	this(); // สร้าง UI จากคอนสตรักเตอร์เดิม
-
     // โหลดไฟล์ถ้ากด Continue; แจ้งเตือนถ้าโหลดไม่ได้
     	if (resume && !loadGameFromCSV()) {
         	JOptionPane.showMessageDialog(this, "NO SAVED GAME FOUND!");
     	}
 
-    // ดันงาน UI หลังหน้าต่างพร้อมจริง
+    // ให้โฟกัสกลับมาที่กระดานเสมอหลังจากโหลด
     javax.swing.SwingUtilities.invokeLater(() -> {
         if (chessBoard != null) chessBoard.requestFocusInWindow();
         GameWindow.this.toFront();
         GameWindow.this.requestFocusInWindow();
-    });
-}
+    	});
+	}
 }
 
 

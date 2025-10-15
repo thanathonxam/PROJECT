@@ -58,7 +58,7 @@ public class Start extends JFrame {
                     new GameWindow(true);
                  }
                 dispose();
-        }
+            }
         });
 
         // ปุ่ม Exit
@@ -73,6 +73,7 @@ public class Start extends JFrame {
                 System.exit(0);
             }
         });
+        
         // วางตำแหน่งปุ่มแบบพิกัด (x, y, width, height)
         playButton.setBounds(520, 795, 250, 70);
         ContinueButton.setBounds(830, 795, 250, 70);

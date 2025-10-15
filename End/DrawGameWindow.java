@@ -10,9 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class DrawGameWindow extends JFrame {
-    /**
-     * คอนสตรักเตอร์สำหรับสร้างหน้าต่าง End Game
-     */
+    // === Constructor: basic UI ===
     public DrawGameWindow() {
         setTitle("Draw");
         setSize(1920, 1080);
@@ -61,8 +59,8 @@ public class DrawGameWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 System.exit(0);
-            }
-        });
+                }
+            });
 
         buttonPanel.add(backButton);
         buttonPanel.add(exitButton);
@@ -71,6 +69,7 @@ public class DrawGameWindow extends JFrame {
         setVisible(true);
     }
 
+    // ลบไฟล์เซฟถ้ามี
     private void deleteSaveIfExists() {
     try {
         Path savePath = Paths.get("Save", "board.csv");
