@@ -240,6 +240,9 @@ public class GameWindow extends JFrame {
 		JLabel player2Color	= new JLabel("(BLACK)",	 SwingConstants.LEFT);
 		JLabel player2Active = new JLabel("ACTIVE",	 SwingConstants.LEFT);
 		JLabel timer2Label	 = new JLabel("10:00",	 SwingConstants.LEFT);
+		timer1Label.setOpaque(false);  
+		timer2Label.setOpaque(false);  
+
 
 		// ฟอนต์/สีให้ตัดกับพื้นหลังเข้ม
 		Color text = new Color(220,230,240);

@@ -5,6 +5,10 @@ import java.awt.event.*;
 import Start.Start;
 import setBackgroud.*;
 import UI.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class EndGameWindow extends JFrame {
     /**
@@ -64,6 +68,7 @@ public class EndGameWindow extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(exitButton);
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
+        deleteSaveIfExists(); // ลบไฟล์เซฟถ้ามี
         setVisible(true);
     }
      // === Overloaded constructor: show who wins ===
@@ -101,6 +106,25 @@ public class EndGameWindow extends JFrame {
         revalidate();
         repaint();
     }
+
+    private void deleteSaveIfExists() {
+    try {
+        Path savePath = Paths.get("Save", "board.csv");
+        if (Files.exists(savePath)) {
+            Files.delete(savePath);               // ลบไฟล์เซฟ
+        }
+        // (ออปชัน) ถ้าอยากลบโฟลเดอร์เมื่อว่างจริง ๆ:
+        Path saveDir = Paths.get("Save");
+        try {
+            Files.delete(saveDir);               // จะลบได้ก็ต่อเมื่อว่าง
+        } catch (IOException ignore) {
+            // โฟลเดอร์ไม่ว่าง/ลบไม่ได้ก็ไม่เป็นไร
+        }
+    } catch (IOException e) {
+        // ไม่ต้องเด้ง error ให้ผู้ใช้ แค่ log ไว้พอ
+        System.err.println("Delete save failed: " + e.getMessage());
+    }
+}
     
 }
 

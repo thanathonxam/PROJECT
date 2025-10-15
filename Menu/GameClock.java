@@ -2,7 +2,7 @@ package Menu;
 import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.*;
-import UI.*;
+import UI.ChessPiece;
 import End.*;
 
 public class GameClock {

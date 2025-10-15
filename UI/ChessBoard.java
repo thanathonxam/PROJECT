@@ -15,6 +15,7 @@ public class ChessBoard extends JPanel{
     private Point selected = null;
     private boolean gameOver = false;
     private GameClock gameClock; 
+    private volatile boolean promoting = false;
 
     public GameClock getGameClock() { return this.gameClock; }
 
@@ -101,6 +102,7 @@ public class ChessBoard extends JPanel{
             for (int c = 0; c < 8; c++) {
                 JButton btn = squares[r][c];
                 ChessPiece piece = board[r][c];
+                btn.setIcon(null);
                 // if this square is a legal move destination and empty, show a dot
                 boolean isLegal = (legalMoves != null && legalMoves.contains(new Point(r, c)));
                 if (isLegal && piece == null) {
@@ -209,7 +211,7 @@ public class ChessBoard extends JPanel{
         if (color == ChessPiece.Color.WHITE) { title = "Promote Pawn (White)"; } 
         else { title = "Promote Pawn (Black)"; }
         int choice = JOptionPane.showOptionDialog(
-            this,
+            SwingUtilities.getWindowAncestor(this),
             "Choose piece:",
             title,
             JOptionPane.DEFAULT_OPTION,
@@ -259,7 +261,7 @@ public class ChessBoard extends JPanel{
             // ถ้าช่องปลายทางมีหมากของฝ่ายเดียวกัน -> เปลี่ยน selection ไปยังช่องนั้น (เลือกหมากใหม่)
             if (to != null && from != null && to.getColor() == from.getColor()) {
                 selected = new Point(r, c);
-            } else {
+            } else {      
                 // Only move if destination is a legal move for the selected piece
                 List<Point> legalMoves = Move.getLegalMoves(board, selected.x, selected.y);
                 boolean isLegal = false;
@@ -274,10 +276,17 @@ public class ChessBoard extends JPanel{
                     logMove(mover, selected.x, selected.y, r, c, isCapture);
                     // === Promotion: ถ้าตัวที่ย้ายเป็น PAWN และถึงแถวสุดท้าย ให้โปรโมท ===
                     if (mover != null && mover.getType() == ChessPiece.Type.PAWN && (r == 0 || r == 7)) {
-                        ChessPiece.Type newType = promptPromotion(mover.getColor());
-                        board[r][c] = new ChessPiece(mover.getColor(), newType);
-                        appendStyled(logArea, " = " + board[r][c].getType().name(), logArea.getForeground(), false);
-                        appendStyled(logArea, "\n", logArea.getForeground(), false);
+                        if (!promoting) {                        // กันซ้อน
+                            promoting = true;
+                            setBoardEnabled(false);  // กันคลิกระหว่างโปรโมต
+                            ChessPiece.Type newType = promptPromotion(mover.getColor());
+                            board[r][c] = new ChessPiece(mover.getColor(), newType);
+                            setBoardEnabled(true);
+                            promoting = false;
+                            appendStyled(logArea, " = " + board[r][c].getType().name(), logArea.getForeground(), false);
+                            appendStyled(logArea, "\n", logArea.getForeground(), false);
+                            refreshBoard();  // รีเฟรชหลังเปลี่ยนชนิด
+                        }
                     }
                     selected = null;
                     // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
