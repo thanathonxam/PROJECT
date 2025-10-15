@@ -23,17 +23,6 @@ public class Move {
 		return legal;
 	}
 
-	public static boolean isLegalMove(ChessPiece[][] board, int fr, int fc, int tr, int tc) {
-		if (!inBounds(fr, fc) || !inBounds(tr, tc)) return false;
-		ChessPiece p = board[fr][fc];
-		if (p == null) return false;
-		// use the filtered legal moves
-		List<Point> moves = getLegalMoves(board, fr, fc);
-		for (Point pt : moves) {
-			if (pt.x == tr && pt.y == tc) return true;
-		}
-		return false;
-	}
 
 	// helpers
 	private static boolean inBounds(int r, int c) {
@@ -156,10 +145,6 @@ public class Move {
 		}
 		return null;
 	}
-	// คืนตำแหน่งราชาของสีที่ระบุ (เพื่อให้ UI เรียกใช้ได้)
-	public static Point getKingSquare(ChessPiece[][] board, ChessPiece.Color color) {
-    	return findKing(board, color);
-	}	
 
 	// ถ้าฝั่งที่ระบุ 'ถูก Rook/Check' ให้คืนตำแหน่งราชา; ถ้าไม่ถูก ให้คืน null
 	public static Point getCheckSquare(ChessPiece[][] board, ChessPiece.Color color) {

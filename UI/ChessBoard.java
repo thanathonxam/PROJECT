@@ -16,26 +16,19 @@ public class ChessBoard extends JPanel{
     private boolean gameOver = false;
     private GameClock gameClock; 
 
-
-    public void setGameClock(GameClock clock) { this.gameClock = clock; }
     public GameClock getGameClock() { return this.gameClock; }
-
-    // ดูว่าเป็นเทิร์นของใคร
-    //private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
 
     private static final Color BOARD_DARK  = new Color(36, 40, 48);  //#242830
     private static final Color BOARD_LIGHT = new Color(66, 74, 86);  //#424A56
     private static final Color ACCENT      = new Color(0, 189, 166); // teal
     private static final Color ACCENT_SOFT = new Color(0, 189, 166, 60); // teal โปร่ง
     
-
     // Player UI
     private JLabel player1Active;
     private JLabel player2Active;
     private JTextPane logArea;
 
       public ChessBoard(JLabel player1Active, JLabel timer1Label,JLabel player2Active, JLabel timer2Label,JTextPane logArea) {
-
         this.player1Active = player1Active;
         this.player2Active = player2Active;
         this.logArea = logArea;
@@ -74,32 +67,32 @@ public class ChessBoard extends JPanel{
     }
 
     private void initStartingPosition() {
-    // Black pieces (ด้านบน)
-    board[0][0] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
-    board[0][1] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
-    board[0][2] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
-    board[0][3] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.QUEEN);
-    board[0][4] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KING);
-    board[0][5] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
-    board[0][6] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
-    board[0][7] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
-    for (int c = 0; c < 8; c++) {
-        board[1][c] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.PAWN);
-    }
+        // Black pieces (ด้านบน)
+        board[0][0] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
+        board[0][1] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
+        board[0][2] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
+        board[0][3] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.QUEEN);
+        board[0][4] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KING);
+        board[0][5] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.BISHOP);
+        board[0][6] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.KNIGHT);
+        board[0][7] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.ROOK);
+        for (int c = 0; c < 8; c++) {
+            board[1][c] = new ChessPiece(ChessPiece.Color.BLACK, ChessPiece.Type.PAWN);
+        }
 
-    // White pieces (ด้านล่าง)
-    for (int c = 0; c < 8; c++) {
-        board[6][c] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.PAWN);
+        // White pieces (ด้านล่าง)
+        for (int c = 0; c < 8; c++) {
+            board[6][c] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.PAWN);
+        }
+        board[7][0] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
+        board[7][1] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
+        board[7][2] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
+        board[7][3] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.QUEEN);
+        board[7][4] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KING);
+        board[7][5] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
+        board[7][6] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
+        board[7][7] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
     }
-    board[7][0] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
-    board[7][1] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
-    board[7][2] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
-    board[7][3] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.QUEEN);
-    board[7][4] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KING);
-    board[7][5] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.BISHOP);
-    board[7][6] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.KNIGHT);
-    board[7][7] = new ChessPiece(ChessPiece.Color.WHITE, ChessPiece.Type.ROOK);
-}
 
     private void refreshBoard() {
         List<Point> legalMoves = (selected != null) ? Move.getLegalMoves(board, selected.x, selected.y) : null;
@@ -154,24 +147,26 @@ public class ChessBoard extends JPanel{
     }
     
     private static String toSquare(int r, int c) {
-    // r: 0..7 (บน->ล่าง = 8..1), c: 0..7 (ซ้าย->ขวา = a..h)
-    char file = (char) ('a' + c);
-    int rank = 8 - r;
-    return "" + file + rank;
-}
+        // r: 0..7 (บน->ล่าง = 8..1), c: 0..7 (ซ้าย->ขวา = a..h)
+        char file = (char) ('a' + c);
+        int rank = 8 - r;
+        return "" + file + rank;
+    }
 
     private static String pieceGlyph(ChessPiece p) {
-    if (p == null) return "?";
-    switch (p.getType()) {
-        case KING:   return "\u265A"; // ♚
-        case QUEEN:  return "\u265B"; // ♛
-        case ROOK:   return "\u265C"; // ♜
-        case BISHOP: return "\u265D"; // ♝
-        case KNIGHT: return "\u265E"; // ♞
-        case PAWN:   return "\u265F"; // ♟
-        default:     return "";
+        if (p == null) return "?";
+            switch (p.getType()) {
+                case KING:   return "\u265A"; // ♚
+                case QUEEN:  return "\u265B"; // ♛
+                case ROOK:   return "\u265C"; // ♜
+                case BISHOP: return "\u265D"; // ♝
+                case KNIGHT: return "\u265E"; // ♞
+                case PAWN:   return "\u265F"; // ♟
+                default:     return "";
+            }
     }
-}
+
+    // เพิ่มข้อความลงใน logArea 
     private static void appendStyled(JTextPane pane, String text, Color color, boolean bold) {
             StyledDocument doc = pane.getStyledDocument();
             SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -183,6 +178,7 @@ public class ChessBoard extends JPanel{
         pane.setCaretPosition(doc.getLength());
     }
 
+    // บันทึกการเดินลงใน logArea
     private void logMove(ChessPiece mover, int rFrom, int cFrom, int rTo, int cTo, boolean isCapture) {
         if (logArea == null || mover == null) return;
             String glyph = pieceGlyph(mover);
@@ -206,7 +202,7 @@ public class ChessBoard extends JPanel{
         }
     }
     
-    // === Pawn Promotion Dialog ===
+    // แสดง dialog ให้เลือกโปรโมท
     private ChessPiece.Type promptPromotion(ChessPiece.Color color) {
         String[] options = {"Queen", "Rook", "Bishop", "Knight"};
         String title;
@@ -231,6 +227,7 @@ public class ChessBoard extends JPanel{
         }
     }
 
+    // เมื่อคลิกที่ช่อง (r,c)
     private void onSquareClicked(int r, int c) {
         // แสดงข้อมูลการคลิกว่าเป็นช่องไหน มีหมากอะไร และเทิร์นของใคร
         if (gameOver) return;
@@ -244,18 +241,18 @@ public class ChessBoard extends JPanel{
                 pieceInfo = type + "/" + color;
             }
             System.out.println(String.format("Clicked (%d,%d) piece=%s currentTurn=%s", r, c, pieceInfo, currentTurn));
-    // ถ้ายังไม่ได้เลือกหมาก
+        // ถ้ายังไม่ได้เลือกหมาก
         if (selected == null && board[r][c] != null) {
             // อนุญาตให้เลือกหมากได้เฉพาะของฝ่ายที่เป็นเทิร์นอยู่
             if (board[r][c].getColor() == currentTurn) {
                 selected = new Point(r, c);
             }
         }
-    // ถ้าคลิกซ้ำที่เดิม → ยกเลิก
+        // ถ้าคลิกซ้ำที่เดิม → ยกเลิก
         else if (selected != null && selected.x == r && selected.y == c) {
             selected = null;
         }
-    // ถ้าเลือกหมากแล้ว และกดช่องอื่น → ย้าย (เฉพาะถ้าเป็นช่องที่ถูกไฮไลท์)
+        // ถ้าเลือกหมากแล้ว และกดช่องอื่น → ย้าย (เฉพาะถ้าเป็นช่องที่ถูกไฮไลท์)
         else if (selected != null) {
             ChessPiece from = board[selected.x][selected.y];
             ChessPiece to = board[r][c];
@@ -332,34 +329,30 @@ public class ChessBoard extends JPanel{
     refreshBoard(); // อัพเดท UI ทุกครั้ง
     }
 
-// Enable or disable the board for moves
-public void setBoardEnabled(boolean enabled) {
-    for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
-            squares[r][c].setEnabled(enabled);
+    // เปิด/ปิด การคลิกบนกระดาน
+    public void setBoardEnabled(boolean enabled) {
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                squares[r][c].setEnabled(enabled);
+            }
         }
     }
-}
 
-// Pause the game clock
-public void pauseClock() {
-    if (gameClock != null) {
-        gameClock.pause();
+    // Pause the game clock
+    public void pauseClock() {
+        if (gameClock != null) {
+            gameClock.pause();
+        }
     }
-}
 
-// Resume the game clock
-public void resumeClock() {
-    if (gameClock != null) {
-        gameClock.resume();
+    // Resume the game clock
+    public void resumeClock() {
+        if (gameClock != null) {
+            gameClock.resume();
+        }
     }
-}
         
-    // เข้าถึงสถานะกระดานและหมาก
-    public ChessPiece getPieceAt(int r, int c) { return board[r][c]; }
-    public void setPieceAt(int r, int c, ChessPiece p) { board[r][c] = p; }
-
-    // ใครเดิน (ถ้ามีฟิลด์อยู่แล้ว เช่น currentTurn ให้ผูกกับของเดิม)
+    // ใครเดิน 
     private ChessPiece.Color currentTurn = ChessPiece.Color.WHITE;
     public ChessPiece.Color getCurrentTurn() { return currentTurn; }
     public void setCurrentTurn(ChessPiece.Color turn) { currentTurn = turn; }
@@ -367,37 +360,56 @@ public void resumeClock() {
     // แปลง ChessPiece -> โทเคนสั้น ๆ (wP/bK/.)
     private String encode(ChessPiece p) {
         if (p == null) return ".";
-            char side = (p.getColor() == ChessPiece.Color.WHITE) ? 'w' : 'b';
-            char t;
-        switch (p.getType()) {
-            case KING: t='K'; break; case QUEEN: t='Q'; break; case ROOK: t='R'; break;
-            case BISHOP: t='B'; break; case KNIGHT: t='N'; break; case PAWN: t='P'; break;
-        default: t='?';
+    char side;
+        if (p.getColor() == ChessPiece.Color.WHITE) {
+            side = 'w';
+        } else {
+            side = 'b';
         }
-        return "" + side + t;
+    char t;
+        switch (p.getType()) {
+            case KING:   t = 'K'; break;
+            case QUEEN:  t = 'Q'; break;
+            case ROOK:   t = 'R'; break;
+            case BISHOP: t = 'B'; break;
+            case KNIGHT: t = 'N'; break;
+            case PAWN:   t = 'P'; break;
+            default:     t = '?';
+        }
+    return "" + side + t;
     }
 
     private ChessPiece decode(String token) {
         if (token == null || token.equals(".") || token.isEmpty()) return null;
-            ChessPiece.Color color = (token.charAt(0)=='w') ? ChessPiece.Color.WHITE : ChessPiece.Color.BLACK;
-            ChessPiece.Type type;
+    ChessPiece.Color color;
+        if (token.charAt(0) == 'w') {
+            color = ChessPiece.Color.WHITE;
+        } else {
+            color = ChessPiece.Color.BLACK;
+        }
+
+    ChessPiece.Type type;
         switch (token.charAt(1)) {
-            case 'K': type = ChessPiece.Type.KING; break;
-            case 'Q': type = ChessPiece.Type.QUEEN; break;
-            case 'R': type = ChessPiece.Type.ROOK; break;
+            case 'K': type = ChessPiece.Type.KING;   break;
+            case 'Q': type = ChessPiece.Type.QUEEN;  break;
+            case 'R': type = ChessPiece.Type.ROOK;   break;
             case 'B': type = ChessPiece.Type.BISHOP; break;
             case 'N': type = ChessPiece.Type.KNIGHT; break;
-            case 'P': type = ChessPiece.Type.PAWN; break;
-            default: return null;
+            case 'P': type = ChessPiece.Type.PAWN;   break;
+            default:  return null;
         }
     return new ChessPiece(color, type);
     }
-    public String encodeAt(int r, int c) { 
-        return encode(board[r][c]); 
+
+    public String encodeAt(int r, int c) {
+        return encode(board[r][c]);
     }
+
     public void decodeToCell(int r, int c, String token) {
         board[r][c] = decode(token);
     }
+
+    // บังคับรีเฟรชกระดาน (ใช้หลังโหลดเกม)
     public void forceRefresh() {
         selected = null;     // กันกรณีมีช่องถูกเลือกค้าง
         refreshBoard();      // อัปเดตข้อความ/สีทุกปุ่มจาก board[][]
