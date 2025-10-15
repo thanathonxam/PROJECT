@@ -1,10 +1,10 @@
-bR,bN,bB,bQ,bK,bB,bN,bR
-bP,.,.,bP,bP,bP,bP,bP
+.,wR,bB,bQ,bK,bB,bN,bR
+bR,.,.,bP,bP,bP,bP,bP
 .,.,.,.,.,.,.,.
-.,.,wP,.,.,.,.,.
-.,.,.,wP,.,.,.,.
+bP,.,bP,.,.,.,.,.
 wP,.,.,.,.,.,.,.
-.,.,bP,.,wP,wP,wP,wP
+.,.,.,.,.,.,.,.
+bN,.,.,wP,wP,wP,wP,wP
 wR,wN,wB,wQ,wK,wB,wN,wR
 TURN,WHITE
-TIME,587,554
+TIME,590,584

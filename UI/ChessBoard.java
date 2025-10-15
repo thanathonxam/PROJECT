@@ -14,7 +14,7 @@ public class ChessBoard extends JPanel{
     private final ChessPiece[][] board = new ChessPiece[8][8];
     private Point selected = null;
     private boolean gameOver = false;
-    private GameClock gameClock; // อ้างถึงนาฬิกาเกม
+    private GameClock gameClock; 
 
 
     public void setGameClock(GameClock clock) { this.gameClock = clock; }
@@ -205,38 +205,29 @@ public class ChessBoard extends JPanel{
             player2Active.setVisible(true);
         }
     }
-
-    private void enableBoard() {
-    for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
-            if (squares[r][c] != null) squares[r][c].setEnabled(true);
-        }
-    }
-}
-
-/** เริ่มเกมใหม่ (เรียกจากปุ่มใน GameWindow) */
-public void restartGame() {
-    // reset state
-    for (int r = 0; r < 8; r++) {
-        for (int c = 0; c < 8; c++) {
-            board[r][c] = null;
-        }
-    }
-    selected = null;
-    currentTurn = ChessPiece.Color.WHITE;
-    gameOver = false;
-
-    // ตั้งหมากใหม่ + เปิดกระดาน + อัปเดต UI
-    initStartingPosition();
-    enableBoard();
-    updatePlayerLabelStyles();
-    refreshBoard();
-
-    // รีเซ็ตนาฬิกา
-    if (gameClock != null) {
-        gameClock.resetClock(600); // 10 นาทีใหม่ (ปรับได้)
-        gameClock.startClock();
-        gameClock.switchTurn(currentTurn);
+    
+    // === Pawn Promotion Dialog ===
+    private ChessPiece.Type promptPromotion(ChessPiece.Color color) {
+        String[] options = {"Queen", "Rook", "Bishop", "Knight"};
+        String title;
+        if (color == ChessPiece.Color.WHITE) { title = "Promote Pawn (White)"; } 
+        else { title = "Promote Pawn (Black)"; }
+        int choice = JOptionPane.showOptionDialog(
+            this,
+            "Choose piece:",
+            title,
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            options,
+            options[0]
+        );
+    if (choice < 0) choice = 0; // ถ้ากดปิด dialog ให้เป็น Queen
+        switch (choice) {
+            case 0: return ChessPiece.Type.QUEEN;
+            case 1: return ChessPiece.Type.ROOK;
+            case 2: return ChessPiece.Type.BISHOP;
+            default: return ChessPiece.Type.KNIGHT;
         }
     }
 
@@ -284,6 +275,13 @@ public void restartGame() {
                     ChessPiece mover = from;
                     boolean isCapture = (to != null);
                     logMove(mover, selected.x, selected.y, r, c, isCapture);
+                    // === Promotion: ถ้าตัวที่ย้ายเป็น PAWN และถึงแถวสุดท้าย ให้โปรโมท ===
+                    if (mover != null && mover.getType() == ChessPiece.Type.PAWN && (r == 0 || r == 7)) {
+                        ChessPiece.Type newType = promptPromotion(mover.getColor());
+                        board[r][c] = new ChessPiece(mover.getColor(), newType);
+                        appendStyled(logArea, " = " + board[r][c].getType().name(), logArea.getForeground(), false);
+                        appendStyled(logArea, "\n", logArea.getForeground(), false);
+                    }
                     selected = null;
                     // เปลี่ยนเทิร์นหลังย้ายหมากสำเร็จ
                     if (currentTurn == ChessPiece.Color.WHITE) {
@@ -303,7 +301,13 @@ public void restartGame() {
                 gameOver = true; // กันไม่ให้กดต่อ
                 java.awt.Window win = SwingUtilities.getWindowAncestor(this);
                 if (win != null) win.dispose(); // ปิดหน้าต่างเกมเดิม (GameWindow)
-                new EndGameWindow();
+                ChessPiece.Color winner;
+                    if (currentTurn == ChessPiece.Color.WHITE) {
+                        winner = ChessPiece.Color.BLACK;
+                    } else {
+                        winner = ChessPiece.Color.WHITE;
+            }
+                new EndGameWindow(winner, "Checkmate");
 				break;
 			}
 			case STALEMATE: {

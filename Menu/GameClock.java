@@ -2,8 +2,8 @@ package Menu;
 import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.*;
-import Start.Start;
 import UI.*;
+import End.*;
 
 public class GameClock {
     private int timeWhite;   // เวลาของผู้เล่นขาว (วินาที)
@@ -42,37 +42,36 @@ public class GameClock {
                 timeWhite--;
                 whiteLabel.setText(formatTime(timeWhite));
                 if (timeWhite <= 0) {
-                    timeoutGoToStart("White time out! Black wins!");
+                    timeoutToEnd(ChessPiece.Color.BLACK, "Time out");
                 }
             } else {
                 timeBlack--;
                 blackLabel.setText(formatTime(timeBlack));
                 if (timeBlack <= 0) {
-                    timeoutGoToStart("Black time out! White wins!");
+                    timeoutToEnd(ChessPiece.Color.WHITE, "Time out");
                 }
             }
         }
     });
         clockTimer.start();
     }
-    private void timeoutGoToStart(String msg) {
-        gameEnded = true;           // กันไม่ให้ actionPerformed ทำงานต่อ
-            if (clockTimer != null) {
-                clockTimer.stop();
-            }
-    JOptionPane.showMessageDialog(null, msg);
 
-    // ปิดหน้าต่างเกม (หา window จาก label ไหนก็ได้ที่อยู่ใน GameWindow)
-    Window w = SwingUtilities.getWindowAncestor(
-        (currentTurn == ChessPiece.Color.WHITE) ? whiteLabel : blackLabel
-    );
-    if (w != null) w.dispose();
+    // เปิด EndGameWindow แล้วขึ้นผู้ชนะตามสี (ภาษาอังกฤษ)
+    private void timeoutToEnd(ChessPiece.Color winner, String reason) {
+        gameEnded = true;
+        if (clockTimer != null) clockTimer.stop();
 
-    // เปิดหน้า Start บน EDT
-        SwingUtilities.invokeLater(() -> {
-        new Start().setVisible(true);   // ถ้าไม่มี Start.open() ใช้ new Start().setVisible(true);
-    });
-}
+        // ปิดหน้าต่างเกม (หา window จาก label ไหนก็ได้ที่อยู่ใน GameWindow)
+        Window w = SwingUtilities.getWindowAncestor(
+            (currentTurn == ChessPiece.Color.WHITE) ? whiteLabel : blackLabel
+        );
+        if (w != null) w.dispose();
+
+        // เปิด EndGameWindow พร้อมข้อความผู้ชนะ
+        EndGameWindow eg = new EndGameWindow(winner, reason);
+        eg.setVisible(true);
+    }
+
     // แปลงวินาทีเป็น MM:SS
     private String formatTime(int seconds) {
         int min = seconds / 60;

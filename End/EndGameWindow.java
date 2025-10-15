@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import Start.Start;
 import setBackgroud.*;
+import UI.*;
 
 public class EndGameWindow extends JFrame {
     /**
@@ -21,7 +22,7 @@ public class EndGameWindow extends JFrame {
         setContentPane(backgroundPanel);
 
         // --- ส่วนหัว (ข้อความ END GAME) ---
-        JLabel titleLabel = new JLabel("END GAME", SwingConstants.CENTER);
+    JLabel titleLabel = new JLabel("END GAME", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 60)); // ฟอนต์ขนาดใหญ่
         titleLabel.setForeground(new Color(192, 57, 43)); // สีแดงเข้ม (Pomegranate)
         backgroundPanel.add(titleLabel, BorderLayout.CENTER);
@@ -65,6 +66,42 @@ public class EndGameWindow extends JFrame {
         backgroundPanel.add(buttonPanel, BorderLayout.SOUTH);
         setVisible(true);
     }
+     // === Overloaded constructor: show who wins ===
+    public EndGameWindow(ChessPiece.Color winner, String reason) {
+        // สร้าง UI พื้นฐานเหมือน constructor เดิม
+        this();
+
+        // สร้างข้อความผู้ชนะ (ภาษาอังกฤษ)
+        String winnerText;
+            if (winner == null) { winnerText = "DRAW"; } 
+            else if (winner == ChessPiece.Color.WHITE) { winnerText = "WHITE WINS"; } 
+            else { winnerText = "BLACK WINS"; }
+
+        // ป้ายบอกผลผู้ชนะวางด้านบน (NORTH) ของพื้นหลัง
+        JLabel winnerLabel = new JLabel(winnerText, SwingConstants.CENTER);
+        winnerLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        winnerLabel.setForeground(Color.WHITE);
+
+        // (option) ใส่เหตุผลเล็ก ๆ ใต้ผู้ชนะ
+        String reasonText;
+        if (reason == null || reason.isEmpty()) { reasonText = ""; } 
+        else { reasonText = "Reason: " + reason; }
+        JLabel reasonLabel = new JLabel(reasonText, SwingConstants.CENTER);
+        reasonLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        reasonLabel.setForeground(Color.LIGHT_GRAY);
+
+        // เอา label สองตัวนี้วางซ้อนใน panel เดียวแล้ว add ไปที่ NORTH
+        JPanel north = new JPanel();
+        north.setOpaque(false);
+        north.setLayout(new GridLayout(2, 1));
+        north.add(winnerLabel);
+        north.add(reasonLabel);
+
+        getContentPane().add(north, BorderLayout.NORTH);
+        revalidate();
+        repaint();
+    }
+    
 }
 
 
